@@ -1,0 +1,98 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext",
+      "required": true
+    },
+    "shortDescription": {
+      "type": "text",
+      "required": true,
+      "maxLength": 200
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "whatsappNumber": {
+      "type": "string",
+      "required": true
+    },
+    "whatsappMessage": {
+      "type": "text"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "featuredImage": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "materials": {
+      "type": "component",
+      "component": "product.materials",
+      "required": true
+    },
+    "dimensions": {
+      "type": "component",
+      "component": "product.dimensions",
+      "required": true
+    },
+    "specifications": {
+      "type": "component",
+      "component": "product.specifications",
+      "repeatable": true
+    },
+    "careInstructions": {
+      "type": "richtext"
+    },
+    "artisan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::artisan.artisan",
+      "inversedBy": "products"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "products"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "products"
+    },
+    "estimatedDelivery": {
+      "type": "string"
+    },
+    "isCustomizable": {
+      "type": "boolean",
+      "default": false
+    },
+    "customizationOptions": {
+      "type": "component",
+      "component": "product.customization-options",
+      "repeatable": true
+    }
+  }
+} 

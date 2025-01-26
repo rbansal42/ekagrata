@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "artisans",
+  "info": {
+    "singularName": "artisan",
+    "pluralName": "artisans",
+    "displayName": "Artisan"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "specialization": {
+      "type": "string",
+      "required": true
+    },
+    "bio": {
+      "type": "text",
+      "required": true
+    },
+    "location": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "artisan"
+    },
+    "stories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::story.story",
+      "mappedBy": "artisan"
+    }
+  }
+} 

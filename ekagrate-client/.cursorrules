@@ -1,0 +1,19 @@
+Ensure to refer to Package.json for the dependencies. All the versions are updated and they are definitely released.
+
+We are using HeroUI for the UI. This was formerly called NextUI. All the components are available in the HeroUI documentation.
+
+The website is for a project called Ekagrata. It is a website for a rotaract project that is meant to promote artisan products. It should act like a storefront for the products.
+We also need to integrate a CMS for the website. The CMS is called Strapi. It should be accessible at ekagrata.netlify.app/admin.
+The website will be hosted on netlify. ekagrata.netlify.app will be the live website.
+
+The website will be in light mode.
+
+Create the website.
+
+The home page should be a landing page with a hero section, a section for the products, a section for the artisans, and a section for the stories.
+
+Use Work Sans font.
+Use glassmorphism design.
+
+The website should be mobile-first and responsive.
+The button to place order is supposed to lead to a WhatsApp chat.

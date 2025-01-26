@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stories",
+  "info": {
+    "singularName": "story",
+    "pluralName": "stories",
+    "displayName": "Story"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "preview": {
+      "type": "text",
+      "required": true
+    },
+    "content": {
+      "type": "richtext",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "artisan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::artisan.artisan",
+      "inversedBy": "stories"
+    }
+  }
+} 
