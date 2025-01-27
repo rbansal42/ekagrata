@@ -1,72 +1,120 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "@heroui/button";
-import { Product } from "@/types";
-import { formatWhatsAppLink, getStrapiMedia, getProducts } from "@/lib/strapi";
-import { Suspense } from "react";
 import Link from "next/link";
+import { Suspense } from "react";
+import { getStrapiMedia } from "@/lib/strapi";
 
-interface ProductCardProps {
-  product: Product;
+interface Category {
+  id: number;
+  attributes: {
+    name: string;
+    description: string;
+    slug: string;
+    image: {
+      data: {
+        attributes: {
+          url: string;
+          alternativeText: string;
+        };
+      };
+    };
+  };
 }
 
-function ProductCard({ product }: ProductCardProps) {
-  const { name, shortDescription, price, featuredImage } = product.attributes;
-  const imageUrl = getStrapiMedia(featuredImage.data.attributes.url);
-  const whatsappLink = formatWhatsAppLink(product);
+interface CategoryCardProps {
+  category: Category;
+}
+
+function CategoryCard({ category }: CategoryCardProps) {
+  const { name, description, slug, image } = category.attributes;
+  const imageUrl = getStrapiMedia(image.data.attributes.url);
 
   return (
-    <div className="group">
-      <Link href={`/products/${product.id}`} className="block">
-        <div className="aspect-square relative rounded-xl overflow-hidden mb-6 bg-rose-50">
-          <Image
-            src={imageUrl}
-            alt={name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-all duration-500 group-hover:scale-105"
-          />
+    <Link 
+      href={`/categories/${slug}` as `/categories/${string}`}
+      className="group block aspect-square relative rounded-2xl overflow-hidden"
+    >
+      <Image
+        src={imageUrl}
+        alt={name}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className="object-cover transition-all duration-500 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-8 text-white">
+        <h3 className="font-light text-2xl tracking-wide mb-2">{name}</h3>
+        <p className="font-light tracking-wide text-white/80 line-clamp-2">{description}</p>
+      </div>
+    </Link>
+  );
+}
+
+function CategoryCardSkeleton() {
+  return (
+    <div className="aspect-square bg-rose-100/50 rounded-2xl animate-pulse" />
+  );
+}
+
+async function CategoriesList() {
+  // TODO: Replace with actual API call once implemented
+  const dummyCategories: Category[] = [
+    {
+      id: 1,
+      attributes: {
+        name: "Textiles",
+        description: "Handwoven sarees, fabrics, and traditional garments",
+        slug: "textiles",
+        image: {
+          data: {
+            attributes: {
+              url: "https://picsum.photos/seed/textiles/800/800",
+              alternativeText: "Textile Category",
+            },
+          },
+        },
+      },
+    },
+    {
+      id: 2,
+      attributes: {
+        name: "Metal Art",
+        description: "Handcrafted brass and copper artifacts",
+        slug: "metal-art",
+        image: {
+          data: {
+            attributes: {
+              url: "https://picsum.photos/seed/metal/800/800",
+              alternativeText: "Metal Art Category",
+            },
+          },
+        },
+      },
+    },
+    {
+      id: 3,
+      attributes: {
+        name: "Pottery",
+        description: "Traditional earthenware and ceramic crafts",
+        slug: "pottery",
+        image: {
+          data: {
+            attributes: {
+              url: "https://picsum.photos/seed/pottery/800/800",
+              alternativeText: "Pottery Category",
+            },
+          },
+        },
+      },
+    },
+  ];
+
+  return (
+    <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
+      {dummyCategories.map((category) => (
+        <div key={category.id} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
+          <CategoryCard category={category} />
         </div>
-        <h3 className="font-light text-xl tracking-wide group-hover:text-rose-900 transition-colors duration-300">{name}</h3>
-        <p className="text-gray-600 mb-3 font-light leading-relaxed line-clamp-2 tracking-wide">{shortDescription}</p>
-        <p className="text-xl font-light text-rose-900 mb-6">₹{price.toLocaleString('en-IN')}</p>
-      </Link>
-      <a 
-        href={whatsappLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full"
-      >
-        <Button 
-          className="w-full bg-rose-900 hover:bg-rose-800 text-white font-light py-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-        >
-          Enquire on WhatsApp
-        </Button>
-      </a>
-    </div>
-  );
-}
-
-function ProductCardSkeleton() {
-  return (
-    <div className="animate-pulse">
-      <div className="aspect-square bg-rose-100/50 rounded-xl mb-6" />
-      <div className="h-7 bg-rose-100/50 rounded-lg mb-3 w-3/4" />
-      <div className="h-4 bg-rose-100/50 rounded-lg mb-2" />
-      <div className="h-4 bg-rose-100/50 rounded-lg mb-6 w-2/3" />
-      <div className="h-12 bg-rose-100/50 rounded-xl" />
-    </div>
-  );
-}
-
-async function ProductsList() {
-  const products = await getProducts();
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
       ))}
     </div>
   );
@@ -76,20 +124,31 @@ export function ProductsSection() {
   return (
     <section id="products" className="container max-w-7xl mx-auto px-6 py-24">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-light mb-4 tracking-wide">Featured Products</h2>
+        <h2 className="text-4xl font-light mb-4 tracking-wide">Shop by Category</h2>
         <p className="text-gray-600 font-light tracking-wide max-w-2xl mx-auto">
-          Discover our curated collection of artisanal treasures, each piece telling a unique story of craftsmanship and heritage
+          Explore our diverse collection of artisanal products, each category showcasing unique craftsmanship and skill
         </p>
       </div>
       <Suspense fallback={
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <ProductCardSkeleton key={i} />
+        <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
+              <CategoryCardSkeleton />
+            </div>
           ))}
         </div>
       }>
-        <ProductsList />
+        <CategoriesList />
       </Suspense>
+      <div className="text-center mt-12">
+        <Link 
+          href="/categories"
+          className="inline-flex items-center gap-2 text-rose-900 hover:text-rose-800 font-light tracking-wide transition-colors duration-300"
+        >
+          Explore All Categories
+          <span className="text-lg">→</span>
+        </Link>
+      </div>
     </section>
   );
 } 

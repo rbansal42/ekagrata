@@ -396,7 +396,6 @@ export interface ApiArtisanArtisan extends Struct.CollectionTypeSchema {
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     specialization: Schema.Attribute.String & Schema.Attribute.Required;
-    stories: Schema.Attribute.Relation<'oneToMany', 'api::story.story'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -490,35 +489,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     whatsappMessage: Schema.Attribute.Text;
     whatsappNumber: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface ApiStoryStory extends Struct.CollectionTypeSchema {
-  collectionName: 'stories';
-  info: {
-    displayName: 'Story';
-    pluralName: 'stories';
-    singularName: 'story';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    artisan: Schema.Attribute.Relation<'manyToOne', 'api::artisan.artisan'>;
-    content: Schema.Attribute.RichText & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::story.story'> &
-      Schema.Attribute.Private;
-    preview: Schema.Attribute.Text & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
   };
 }
 
@@ -1065,7 +1035,6 @@ declare module '@strapi/strapi' {
       'api::artisan.artisan': ApiArtisanArtisan;
       'api::category.category': ApiCategoryCategory;
       'api::product.product': ApiProductProduct;
-      'api::story.story': ApiStoryStory;
       'api::tag.tag': ApiTagTag;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

@@ -60,11 +60,10 @@ const LogoVariation6 = () => (
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const menuItems = [
+  const navigation = [
     { name: "Home", href: "/" },
     { name: "Products", href: "#products" },
     { name: "Artisans", href: "#artisans" },
-    { name: "Stories", href: "#stories" },
   ];
 
   return (
@@ -89,7 +88,7 @@ export function Navbar() {
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-8" justify="center">
-        {menuItems.map((item) => (
+        {navigation.map((item) => (
           <NavbarItem key={item.name}>
             <Link
               href={item.href}
@@ -114,7 +113,7 @@ export function Navbar() {
       </NavbarContent>
 
       <NavbarMenu className="bg-white/95 backdrop-blur-lg pt-8">
-        {menuItems.map((item) => (
+        {navigation.map((item) => (
           <NavbarMenuItem key={item.name} className="py-3">
             <Link
               className="w-full text-gray-600 hover:text-rose-900 transition-colors duration-300 font-light tracking-wide text-lg"

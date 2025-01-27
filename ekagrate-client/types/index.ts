@@ -97,13 +97,11 @@ export interface Product {
 }
 
 export interface Artisan {
-  id: number;
+  id: string;
   attributes: {
     name: string;
-    specialization: string;
     bio: string;
-    location: string;
-    image: StrapiImage;
+    image: Media;
     products: {
       data: Product[];
     };

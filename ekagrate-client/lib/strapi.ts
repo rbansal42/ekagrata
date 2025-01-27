@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Product, Artisan, Story, StrapiResponse } from "@/types";
+import { Product, Artisan, StrapiResponse } from "@/types";
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
@@ -232,16 +232,6 @@ export async function getArtisans(revalidate?: number): Promise<Artisan[]> {
 export async function getArtisan(id: string): Promise<Artisan> {
   const response = await fetchAPI<{ data: Artisan }>(`artisans/${id}?populate=*`);
   return response.data as unknown as Artisan;
-}
-
-export async function getStories(revalidate?: number): Promise<Story[]> {
-  const response = await fetchAPI<Story[]>("stories?populate=*", revalidate ? 'no-store' : 'force-cache');
-  return (response.data as unknown as Story[]) || [];
-}
-
-export async function getStory(id: string): Promise<Story> {
-  const response = await fetchAPI<{ data: Story }>(`stories/${id}?populate=*`);
-  return response.data as unknown as Story;
 }
 
 export function formatWhatsAppLink(product: Product): string {

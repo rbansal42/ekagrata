@@ -9,6 +9,7 @@
   "options": {
     "draftAndPublish": true
   },
+  "pluginOptions": {},
   "attributes": {
     "name": {
       "type": "string",
@@ -36,12 +37,6 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product.product",
-      "mappedBy": "artisan"
-    },
-    "stories": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::story.story",
       "mappedBy": "artisan"
     }
   }

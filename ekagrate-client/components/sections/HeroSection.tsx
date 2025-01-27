@@ -15,14 +15,14 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative flex flex-col items-center gap-12 max-w-5xl mx-auto">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-light">
-          Empowering Artisans,{" "}
+          Empowering Local{" "}
           <span className="font-normal bg-gradient-to-r from-rose-900 via-rose-800 to-rose-900 bg-clip-text text-transparent">
-            Preserving Heritage
+            Artisans
           </span>
         </h1>
         <p className="text-lg md:text-xl text-gray-600 max-w-2xl font-light leading-relaxed tracking-wide">
-          Connect with skilled local artisans and discover unique handcrafted treasures. 
-          Every purchase supports traditional craftsmanship and sustainable livelihoods.
+          Connect directly with skilled local artisans and discover their unique handcrafted creations. 
+          Every purchase creates sustainable opportunities and supports their livelihoods.
         </p>
         <div className="flex flex-col sm:flex-row gap-6 mt-4">
           <Button 
@@ -36,10 +36,10 @@ export function HeroSection() {
             size="lg" 
             variant="bordered"
             className="font-light border-2 border-rose-900 text-rose-900 hover:bg-rose-50/50 px-10 py-7 text-lg rounded-xl transition-all duration-300"
-            href="#products"
+            href="#artisans"
             as="a"
           >
-            Explore Collection
+            Meet our Artisans
           </Button>
         </div>
         
@@ -57,6 +57,11 @@ export function HeroSection() {
             <span className="text-rose-900">✦</span>
             <span className="font-light tracking-wide">Sustainable Practices</span>
           </div>
+        </div>
+
+        {/* Initiative Text */}
+        <div className="text-sm text-gray-600 font-light tracking-wide mt-8">
+          An Initiative by <span className="text-rose-900">Rotaract Club of Ingenious Minds</span>
         </div>
       </div>
 

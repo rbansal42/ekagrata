@@ -85,8 +85,11 @@ export default function RootLayout({
             <main className="flex-grow pt-16">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center py-8 border-t border-rose-100/20 backdrop-blur-sm">
-              <p className="text-gray-600 font-light tracking-wide">© 2024 Ekagrata. All rights reserved.</p>
+            <footer className="w-full flex flex-col items-center justify-center py-8 gap-2 border-t border-rose-100/20 backdrop-blur-sm">
+              <p className="text-gray-600 font-light tracking-wide text-sm">
+                An Initiative by <span className="text-rose-900">Rotaract Club of Ingenious Minds</span>
+              </p>
+              <p className="text-gray-600 font-light tracking-wide text-sm">© 2024 Ekagrata. All rights reserved.</p>
             </footer>
           </div>
         </Providers>
