@@ -4,23 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { getStrapiMedia } from "@/lib/strapi";
-
-interface Category {
-  id: number;
-  attributes: {
-    name: string;
-    description: string;
-    slug: string;
-    image: {
-      data: {
-        attributes: {
-          url: string;
-          alternativeText: string;
-        };
-      };
-    };
-  };
-}
+import { Category } from "@/types";
+import { DUMMY_CATEGORIES } from "@/constants/dummyData";
+import type { Route } from "next";
 
 interface CategoryCardProps {
   category: Category;
@@ -32,7 +18,7 @@ function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Link 
-      href={`/categories/${slug}` as `/categories/${string}`}
+      href={`/products?category=${slug}` as Route}
       className="group block aspect-square relative rounded-2xl overflow-hidden"
     >
       <Image
@@ -57,67 +43,30 @@ function CategoryCardSkeleton() {
 }
 
 async function CategoriesList() {
-  // TODO: Replace with actual API call once implemented
-  const dummyCategories: Category[] = [
-    {
-      id: 1,
-      attributes: {
-        name: "Textiles",
-        description: "Handwoven sarees, fabrics, and traditional garments",
-        slug: "textiles",
-        image: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/textiles/800/800",
-              alternativeText: "Textile Category",
-            },
-          },
-        },
-      },
-    },
-    {
-      id: 2,
-      attributes: {
-        name: "Metal Art",
-        description: "Handcrafted brass and copper artifacts",
-        slug: "metal-art",
-        image: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/metal/800/800",
-              alternativeText: "Metal Art Category",
-            },
-          },
-        },
-      },
-    },
-    {
-      id: 3,
-      attributes: {
-        name: "Pottery",
-        description: "Traditional earthenware and ceramic crafts",
-        slug: "pottery",
-        image: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/pottery/800/800",
-              alternativeText: "Pottery Category",
-            },
-          },
-        },
-      },
-    },
-  ];
+  try {
+    const categories = DUMMY_CATEGORIES;
 
-  return (
-    <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
-      {dummyCategories.map((category) => (
-        <div key={category.id} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
-          <CategoryCard category={category} />
-        </div>
-      ))}
-    </div>
-  );
+    return (
+      <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
+        {categories.map((category) => (
+          <div key={category.id} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
+            <CategoryCard category={category} />
+          </div>
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error('Error loading categories:', error);
+    return (
+      <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
+        {DUMMY_CATEGORIES.map((category) => (
+          <div key={category.id} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
+            <CategoryCard category={category} />
+          </div>
+        ))}
+      </div>
+    );
+  }
 }
 
 export function ProductsSection() {
@@ -142,7 +91,7 @@ export function ProductsSection() {
       </Suspense>
       <div className="text-center mt-12">
         <Link 
-          href="/categories"
+          href={"/categories" as Route}
           className="inline-flex items-center gap-2 text-rose-900 hover:text-rose-800 font-light tracking-wide transition-colors duration-300"
         >
           Explore All Categories

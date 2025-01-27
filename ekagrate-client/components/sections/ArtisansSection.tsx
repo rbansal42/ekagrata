@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Artisan } from "@/types";
 import { getStrapiMedia, getArtisans } from "@/lib/strapi";
 import Link from "next/link";
+import type { Route } from "next";
+import { DUMMY_ARTISANS } from "@/constants/dummyData";
 
 interface ArtisanCardProps {
   artisan: Artisan;
@@ -15,7 +17,7 @@ function ArtisanCard({ artisan }: ArtisanCardProps) {
 
   return (
     <div className="group">
-      <Link href={`/artisans/${artisan.id}`} className="block">
+      <Link href={`/artisans/${artisan.id}` as Route} className="block">
         <div className="relative mb-6">
           <div className="aspect-[3/4] relative rounded-xl overflow-hidden bg-rose-50">
             <Image
@@ -49,15 +51,31 @@ function ArtisanCardSkeleton() {
 }
 
 async function ArtisansList() {
-  const artisans = await getArtisans();
+  try {
+    const response = await getArtisans();
+    const artisans = response?.data || DUMMY_ARTISANS;
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-      {artisans.map((artisan) => (
-        <ArtisanCard key={artisan.id} artisan={artisan} />
-      ))}
-    </div>
-  );
+    return (
+      <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-12 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
+        {artisans.map((artisan: Artisan) => (
+          <div key={artisan.id} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
+            <ArtisanCard artisan={artisan} />
+          </div>
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error('Error fetching artisans:', error);
+    return (
+      <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-12 overflow-x-auto md:overflow-x-visible pb-8 md:pb-0 -mx-6 px-6 md:mx-0 snap-x snap-mandatory md:snap-none hide-scrollbar">
+        {DUMMY_ARTISANS.map((artisan: Artisan) => (
+          <div key={artisan.id} className="w-[85vw] sm:w-[60vw] md:w-auto flex-shrink-0 snap-center">
+            <ArtisanCard artisan={artisan} />
+          </div>
+        ))}
+      </div>
+    );
+  }
 }
 
 export function ArtisansSection() {

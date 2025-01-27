@@ -1,24 +1,26 @@
+"use client";
+
 import { getProduct } from "@/lib/strapi";
 import { ProductDetail } from "@/components/sections";
 import { notFound } from "next/navigation";
-
-type Params = Promise<{ id: string }>;
+import { DUMMY_PRODUCTS } from "@/constants/dummyData";
 
 interface ProductPageProps {
-  params: Params;
+  params: { slug: string };
 }
 
-export default async function ProductPage({
+export default function ProductPage({
   params,
 }: ProductPageProps) {
-  const { id } = await params;
+  const { slug } = params;
   
-  if (!id) {
+  if (!slug) {
     notFound();
   }
 
   try {
-    const product = await getProduct(id);
+    // Find product from dummy data using slug
+    const product = DUMMY_PRODUCTS.find(p => p.attributes.slug === slug);
     
     if (!product) {
       notFound();
@@ -30,6 +32,7 @@ export default async function ProductPage({
       </div>
     );
   } catch (error) {
+    console.error("Error loading product:", error);
     notFound();
   }
 } 

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Product } from "@/types";
 import { formatWhatsAppLink, getStrapiMedia } from "@/lib/strapi";
 import { Button } from "@heroui/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 
@@ -42,22 +42,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   const [selectedImage, setSelectedImage] = useState(allImages[0]);
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'care'>('description');
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageContainerRef.current) return;
+
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setZoomPosition({ x, y });
+  };
 
   return (
     <div className="container max-w-7xl mx-auto px-6 py-12">
       {/* Breadcrumb */}
       <div className="mb-8 text-sm text-gray-500">
-        <Link href="/" className="hover:text-rose-900">Home</Link>
+        <Link href={"/" as Route} className="hover:text-rose-900">Home</Link>
         <span className="mx-2">/</span>
-        <Link href="/#products" className="hover:text-rose-900">Products</Link>
-        {category?.data && (
-          <>
-            <span className="mx-2">/</span>
-            <Link href={`/categories/${category.data.id}` as Route} className="hover:text-rose-900">
-              {category.data.attributes.name}
-            </Link>
-          </>
-        )}
+        <Link href={"/products" as Route} className="hover:text-rose-900">Products</Link>
         <span className="mx-2">/</span>
         <span className="text-gray-900">{name}</span>
       </div>
@@ -65,7 +70,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Image Gallery */}
         <div className="space-y-6">
-          <div className="aspect-square relative rounded-xl overflow-hidden bg-rose-50">
+          <div 
+            ref={imageContainerRef}
+            className="aspect-square relative rounded-xl overflow-hidden bg-rose-50 cursor-zoom-in"
+            onMouseEnter={() => setIsZoomed(true)}
+            onMouseLeave={() => setIsZoomed(false)}
+            onMouseMove={handleMouseMove}
+          >
             <Image
               src={selectedImage || "https://picsum.photos/600/400?blur=2"}
               alt={name}
@@ -74,6 +85,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
             />
+            {isZoomed && (
+              <div 
+                className="absolute inset-0 overflow-hidden"
+                style={{
+                  backgroundImage: `url(${selectedImage})`,
+                  backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  backgroundSize: '200%',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
           </div>
           {allImages.length > 1 && (
             <div className="grid grid-cols-4 gap-4">

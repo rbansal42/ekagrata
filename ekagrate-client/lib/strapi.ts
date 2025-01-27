@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { Product, Artisan, StrapiResponse } from "@/types";
+import { Product, Artisan, StrapiResponse, Category, PaginationMeta } from "@/types";
+import qs from "qs";
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
@@ -214,19 +215,105 @@ async function fetchAPI<T>(endpoint: string, cache: RequestCache = 'force-cache'
   return res.json();
 }
 
-export async function getProducts(revalidate?: number): Promise<Product[]> {
-  const response = await fetchAPI<Product[]>("products?populate=*", revalidate ? 'no-store' : 'force-cache');
-  return (response.data as unknown as Product[]) || [];
+export async function getProducts(filters: ProductFilters = {}): Promise<FetchResponse<Product[]>> {
+  const {
+    categories,
+    artisans,
+    priceRange,
+    inStock,
+    sortBy = "createdAt:desc",
+    page = 1,
+    pageSize = 9,
+  } = filters;
+
+  const query = {
+    populate: ["images", "category", "artisan"],
+    pagination: {
+      page,
+      pageSize,
+    },
+    filters: {
+      ...(categories?.length && {
+        category: {
+          id: {
+            $in: categories,
+          },
+        },
+      }),
+      ...(artisans?.length && {
+        artisan: {
+          id: {
+            $in: artisans,
+          },
+        },
+      }),
+      ...(inStock && {
+        stock: {
+          $gt: 0,
+        },
+      }),
+      ...(priceRange && priceRange !== "all" && {
+        price: getPriceFilter(priceRange),
+      }),
+    },
+    sort: getSortValue(sortBy),
+  };
+
+  const queryString = qs.stringify(query, { encodeValuesOnly: true });
+  const response = await fetch(`${STRAPI_URL}/api/products?${queryString}`);
+  return response.json();
+}
+
+export async function getCategories(): Promise<FetchResponse<Category[]>> {
+  const query = qs.stringify({
+    populate: ["image"],
+  }, { encodeValuesOnly: true });
+
+  const response = await fetch(`${STRAPI_URL}/api/categories?${query}`);
+  return response.json();
+}
+
+export async function getArtisans(): Promise<FetchResponse<Artisan[]>> {
+  const query = qs.stringify({
+    populate: ["image"],
+  }, { encodeValuesOnly: true });
+
+  const response = await fetch(`${STRAPI_URL}/api/artisans?${query}`);
+  return response.json();
+}
+
+function getPriceFilter(priceRange: string) {
+  const [min, max] = priceRange.split("-").map(Number);
+  
+  if (!max) {
+    return {
+      $gt: min,
+    };
+  }
+
+  return {
+    $gte: min,
+    $lte: max,
+  };
+}
+
+function getSortValue(sortBy: string) {
+  switch (sortBy) {
+    case "price-low":
+      return ["price:asc"];
+    case "price-high":
+      return ["price:desc"];
+    case "popular":
+      return ["views:desc"];
+    case "newest":
+    default:
+      return ["createdAt:desc"];
+  }
 }
 
 export async function getProduct(id: string): Promise<Product> {
   const response = await fetchAPI<{ data: Product }>(`products/${id}?populate=*`);
   return response.data as unknown as Product;
-}
-
-export async function getArtisans(revalidate?: number): Promise<Artisan[]> {
-  const response = await fetchAPI<Artisan[]>("artisans?populate=*", revalidate ? 'no-store' : 'force-cache');
-  return (response.data as unknown as Artisan[]) || [];
 }
 
 export async function getArtisan(id: string): Promise<Artisan> {
@@ -242,9 +329,9 @@ export function formatWhatsAppLink(product: Product): string {
   return `https://wa.me/${product.attributes.whatsappNumber}?text=${message}`;
 }
 
-export function getStrapiMedia(url: string | null): string {
-  if (!url) return "https://picsum.photos/600/400?blur=2";
-  if (url.startsWith("/dummy")) return url; // Handle dummy data URLs
-  if (url.startsWith("http")) return url;
+export function getStrapiMedia(url: string): string {
+  if (url.startsWith("http") || url.startsWith("//")) {
+    return url;
+  }
   return `${STRAPI_URL}${url}`;
 } 

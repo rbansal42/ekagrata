@@ -12,6 +12,7 @@ import {
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import { useState } from "react";
+import type { Route } from "next";
 
 // Choose one of these logo variations by uncommenting it and commenting out the others
 const LogoVariation1 = () => (
@@ -61,9 +62,9 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Products", href: "#products" },
-    { name: "Artisans", href: "#artisans" },
+    { name: "Home", href: "/" as Route },
+    { name: "Products", href: "/products" as Route },
+    { name: "Artisans", href: "/artisans" as Route },
   ];
 
   return (
@@ -79,7 +80,7 @@ export function Navbar() {
           className="sm:hidden text-rose-900"
         />
         <NavbarBrand>
-          <Link href="/" className="flex items-center">
+          <Link href={"/" as Route} className="flex items-center">
             <span className="font-cinzel text-2xl tracking-[0.15em] text-rose-900 uppercase font-light">
               ekagrata
             </span>
@@ -104,7 +105,7 @@ export function Navbar() {
         <NavbarItem>
           <Button
             as={Link}
-            href="https://wa.me/your-number-here"
+            href={"https://wa.me/your-number-here" as Route}
             className="bg-rose-900 hover:bg-rose-800 text-white font-light px-6 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
           >
             Contact Us
