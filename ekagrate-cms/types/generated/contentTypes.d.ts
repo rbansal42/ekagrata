@@ -384,6 +384,7 @@ export interface ApiArtisanArtisan extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -449,7 +450,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
   attributes: {
     artisan: Schema.Attribute.Relation<'manyToOne', 'api::artisan.artisan'>;
-    careInstructions: Schema.Attribute.RichText;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -459,9 +459,8 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       true
     >;
     description: Schema.Attribute.RichText & Schema.Attribute.Required;
-    dimensions: Schema.Attribute.Component<'product.dimensions', false> &
-      Schema.Attribute.Required;
     estimatedDelivery: Schema.Attribute.String;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     featuredImage: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     images: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
     isCustomizable: Schema.Attribute.Boolean &
@@ -472,8 +471,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'api::product.product'
     > &
       Schema.Attribute.Private;
-    materials: Schema.Attribute.Component<'product.materials', false> &
-      Schema.Attribute.Required;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
@@ -482,13 +479,43 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 200;
       }>;
-    specifications: Schema.Attribute.Component<'product.specifications', true>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     whatsappMessage: Schema.Attribute.Text;
     whatsappNumber: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiSiteConfigSiteConfig extends Struct.SingleTypeSchema {
+  collectionName: 'site_configs';
+  info: {
+    displayName: 'Site Configuration';
+    pluralName: 'site-configs';
+    singularName: 'site-config';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contact_email: Schema.Attribute.Email & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    default_whatsapp_message: Schema.Attribute.Text;
+    instagram_handle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::site-config.site-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    whatsapp_number: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -1035,6 +1062,7 @@ declare module '@strapi/strapi' {
       'api::artisan.artisan': ApiArtisanArtisan;
       'api::category.category': ApiCategoryCategory;
       'api::product.product': ApiProductProduct;
+      'api::site-config.site-config': ApiSiteConfigSiteConfig;
       'api::tag.tag': ApiTagTag;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

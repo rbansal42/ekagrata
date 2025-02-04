@@ -1,38 +1,51 @@
 "use client";
 
-import { getProduct } from "@/lib/strapi";
-import { ProductDetail } from "@/components/sections";
-import { notFound } from "next/navigation";
-import { DUMMY_PRODUCTS } from "@/constants/dummyData";
+import { useEffect, useState } from "react";
+import { getProducts, Product } from "@/lib/strapi";
+import { ProductDetail } from "@/components/sections/ProductDetail";
 
-interface ProductPageProps {
-  params: { slug: string };
-}
-
-export default function ProductPage({
-  params,
-}: ProductPageProps) {
+export default function ProductPage({ params }: { params: { slug: string } }) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const { slug } = params;
-  
-  if (!slug) {
-    notFound();
-  }
 
-  try {
-    // Find product from dummy data using slug
-    const product = DUMMY_PRODUCTS.find(p => p.attributes.slug === slug);
-    
-    if (!product) {
-      notFound();
-    }
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const response = await getProducts({ filters: { slug: { $eq: slug } } });
+        setProduct(response?.data?.[0] || null);
+      } catch (error) {
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <ProductDetail product={product} />
+      <div className="container max-w-7xl mx-auto px-6 py-12 animate-pulse">
+        <div className="aspect-[2/1] bg-rose-100/50 rounded-2xl mb-12" />
+        <div className="h-8 bg-rose-100/50 rounded-lg mb-4 w-1/3" />
+        <div className="h-6 bg-rose-100/50 rounded-lg mb-8 w-1/4" />
+        <div className="h-4 bg-rose-100/50 rounded-lg mb-2 w-full" />
+        <div className="h-4 bg-rose-100/50 rounded-lg mb-2 w-5/6" />
+        <div className="h-4 bg-rose-100/50 rounded-lg w-4/6" />
       </div>
     );
-  } catch (error) {
-    console.error("Error loading product:", error);
-    notFound();
   }
-} 
+
+  if (!product) {
+    return (
+      <div className="container max-w-7xl mx-auto px-6 py-12 text-center">
+        <h1 className="text-4xl font-light mb-4 tracking-wide">Product Not Found</h1>
+        <p className="text-gray-600 font-light mb-8">The product you&apos;re looking for doesn&apos;t exist.</p>
+      </div>
+    );
+  }
+
+  return <ProductDetail product={product} />;
+}

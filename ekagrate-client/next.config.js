@@ -3,22 +3,14 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: 'https',
+        hostname: process.env.STRAPI_PRODUCTION_HOST,
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         port: '1337',
         pathname: '/uploads/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
       }
     ],
     dangerouslyAllowSVG: true,

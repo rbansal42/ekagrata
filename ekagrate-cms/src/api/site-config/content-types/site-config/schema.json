@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_configs",
+  "info": {
+    "singularName": "site-config",
+    "pluralName": "site-configs",
+    "displayName": "Site Configuration"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "whatsapp_number": {
+      "type": "string",
+      "required": true
+    },
+    "default_whatsapp_message": {
+      "type": "text"
+    },
+    "contact_email": {
+      "type": "email",
+      "required": true
+    },
+    "instagram_handle": {
+      "type": "string"
+    }
+  }
+} 

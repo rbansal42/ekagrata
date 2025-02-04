@@ -1,12 +1,10 @@
 "use client";
 
+import type { Route } from "next";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getStrapiMedia, getArtisan } from "@/lib/strapi";
-import { Artisan, Product } from "@/types";
-import { DUMMY_ARTISANS, DUMMY_PRODUCTS } from "@/constants/dummyData";
-import type { Route } from "next";
+import { getStrapiMedia, getArtisan, Artisan as StrapiArtisan, getProducts, Product } from "@/lib/strapi";
 
 interface ProductCardProps {
   product: Product;
@@ -34,20 +32,8 @@ function ProductCard({ product }: ProductCardProps) {
   );
 }
 
-function ProductCardSkeleton() {
-  return (
-    <div className="animate-pulse">
-      <div className="aspect-square bg-rose-100/50 rounded-xl mb-4" />
-      <div className="h-6 bg-rose-100/50 rounded-lg mb-2 w-3/4" />
-      <div className="h-5 bg-rose-100/50 rounded-lg mb-4 w-1/4" />
-      <div className="h-4 bg-rose-100/50 rounded-lg mb-2" />
-      <div className="h-4 bg-rose-100/50 rounded-lg w-2/3" />
-    </div>
-  );
-}
-
 export default function ArtisanDetailPage({ params }: { params: { id: string } }) {
-  const [artisan, setArtisan] = useState<Artisan | null>(null);
+  const [artisan, setArtisan] = useState<StrapiArtisan | null>(null);
   const [artisanProducts, setArtisanProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,24 +42,14 @@ export default function ArtisanDetailPage({ params }: { params: { id: string } }
       setLoading(true);
       try {
         const response = await getArtisan(params.id);
-        const foundArtisan = response?.data || DUMMY_ARTISANS.find(a => a.id === Number(params.id));
-        setArtisan(foundArtisan || null);
+        setArtisan(response?.data || null);
 
-        // Filter products by artisan ID
-        const products = DUMMY_PRODUCTS.filter(
-          product => product.attributes.artisan.data.id === Number(params.id)
-        );
-        setArtisanProducts(products);
+        // Get products by artisan ID
+        const productsResponse = await getProducts({ artisan: params.id });
+        setArtisanProducts(productsResponse?.data || []);
       } catch (error) {
-        console.error("Error fetching artisan:", error);
-        const dummyArtisan = DUMMY_ARTISANS.find(a => a.id === Number(params.id));
-        setArtisan(dummyArtisan || null);
-        
-        // Set dummy products for this artisan
-        const dummyProducts = DUMMY_PRODUCTS.filter(
-          product => product.attributes.artisan.data.id === Number(params.id)
-        );
-        setArtisanProducts(dummyProducts);
+        setArtisan(null);
+        setArtisanProducts([]);
       } finally {
         setLoading(false);
       }
@@ -98,7 +74,7 @@ export default function ArtisanDetailPage({ params }: { params: { id: string } }
     return (
       <div className="container max-w-7xl mx-auto px-6 py-12 text-center">
         <h1 className="text-4xl font-light mb-4 tracking-wide">Artisan Not Found</h1>
-        <p className="text-gray-600 font-light mb-8">The artisan you're looking for doesn't exist.</p>
+        <p className="text-gray-600 font-light mb-8">The artisan you&apos;re looking for doesn&apos;t exist.</p>
         <Link 
           href={"/artisans" as Route}
           className="text-rose-900 hover:text-rose-800 font-light tracking-wide transition-colors duration-300"
@@ -159,4 +135,4 @@ export default function ArtisanDetailPage({ params }: { params: { id: string } }
       </div>
     </div>
   );
-} 
+}

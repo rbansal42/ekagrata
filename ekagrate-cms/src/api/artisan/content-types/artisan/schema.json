@@ -38,6 +38,10 @@
       "relation": "oneToMany",
       "target": "api::product.product",
       "mappedBy": "artisan"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
     }
   }
 } 

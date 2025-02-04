@@ -1,5 +1,7 @@
 "use client";
 
+import type { Route } from "next";
+
 import {
   Navbar as HeroNavbar,
   NavbarBrand,
@@ -12,7 +14,6 @@ import {
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import { useState } from "react";
-import type { Route } from "next";
 
 // Choose one of these logo variations by uncommenting it and commenting out the others
 const LogoVariation1 = () => (
@@ -69,10 +70,10 @@ export function Navbar() {
 
   return (
     <HeroNavbar
-      isMenuOpen={isMenuOpen}
-      onMenuOpenChange={setIsMenuOpen}
       className="fixed bg-white/80 backdrop-blur-lg border-b border-rose-100/20 shadow-sm"
+      isMenuOpen={isMenuOpen}
       maxWidth="xl"
+      onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent>
         <NavbarMenuToggle
@@ -80,7 +81,7 @@ export function Navbar() {
           className="sm:hidden text-rose-900"
         />
         <NavbarBrand>
-          <Link href={"/" as Route} className="flex items-center">
+          <Link className="flex items-center" href={"/" as Route}>
             <span className="font-cinzel text-2xl tracking-[0.15em] text-rose-900 uppercase font-light">
               ekagrata
             </span>
@@ -92,8 +93,8 @@ export function Navbar() {
         {navigation.map((item) => (
           <NavbarItem key={item.name}>
             <Link
-              href={item.href}
               className="text-gray-600 hover:text-rose-900 transition-colors duration-300 font-light tracking-wide"
+              href={item.href}
             >
               {item.name}
             </Link>
@@ -105,8 +106,8 @@ export function Navbar() {
         <NavbarItem>
           <Button
             as={Link}
-            href={"https://wa.me/your-number-here" as Route}
             className="bg-rose-900 hover:bg-rose-800 text-white font-light px-6 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+            href={"/contact" as Route}
           >
             Contact Us
           </Button>

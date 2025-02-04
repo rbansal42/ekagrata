@@ -22,12 +22,7 @@ export default function Error({
       <p className="text-lg text-gray-600 max-w-md">
         We apologize for the inconvenience. Please try again later.
       </p>
-      <Button
-        color="primary"
-        variant="flat"
-        onClick={reset}
-        className="mt-4"
-      >
+      <Button className="mt-4" color="primary" variant="flat" onClick={reset}>
         Try again
       </Button>
     </div>
