@@ -1,131 +1,116 @@
 "use client";
 
-import type { Route } from "next";
+import { useState } from 'react';
+import Link from 'next/link';
+import { useCategories, useSiteConfig } from '../lib/hooks';
+import { getImageUrl } from '../lib/utils';
+import Image from 'next/image';
 
-import {
-  Navbar as HeroNavbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenu,
-  NavbarMenuItem,
-  NavbarMenuToggle,
-} from "@heroui/navbar";
-import { Link } from "@heroui/link";
-import { Button } from "@heroui/button";
-import { useState } from "react";
-
-// Choose one of these logo variations by uncommenting it and commenting out the others
-const LogoVariation1 = () => (
-  // Classic Uppercase with Extra Spacing
-  <span className="font-cinzel text-2xl tracking-[0.25em] text-rose-900 uppercase font-semibold">
-    ekagrata
-  </span>
-);
-
-const LogoVariation2 = () => (
-  // Two-Tone Split with Different Weights
-  <span className="font-cinzel text-2xl tracking-[0.15em] uppercase">
-    <span className="text-rose-900 font-bold">EKA</span>
-    <span className="text-rose-800 font-normal">GRATA</span>
-  </span>
-);
-
-const LogoVariation3 = () => (
-  // Larger Size with Normal Spacing
-  <span className="font-cinzel text-3xl tracking-[0.1em] text-rose-900 uppercase font-medium">
-    ekagrata
-  </span>
-);
-
-const LogoVariation4 = () => (
-  // Mixed Case with Custom Spacing
-  <span className="font-cinzel text-2xl tracking-[0.12em] text-rose-900 font-semibold">
-    Ekagrata
-  </span>
-);
-
-const LogoVariation5 = () => (
-  // Compact Uppercase with Gradient
-  <span className="font-cinzel text-2xl tracking-[0.08em] uppercase font-bold bg-gradient-to-r from-rose-900 to-rose-800 bg-clip-text text-transparent">
-    ekagrata
-  </span>
-);
-
-const LogoVariation6 = () => (
-  // Extra Large with Minimal Spacing
-  <span className="font-cinzel text-4xl tracking-[0.05em] text-rose-900 uppercase font-light">
-    ekagrata
-  </span>
-);
-
-export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { categories } = useCategories();
+  const { config } = useSiteConfig();
 
   const navigation = [
-    { name: "Home", href: "/" as Route },
-    { name: "Products", href: "/products" as Route },
-    { name: "Artisans", href: "/artisans" as Route },
+    { name: 'Home', href: '/' },
+    { name: 'Products', href: '/products' },
+    { name: 'Artisans', href: '/artisans' },
+    { name: 'Contact', href: '/contact' },
   ];
 
   return (
-    <HeroNavbar
-      className="fixed bg-white/80 backdrop-blur-lg border-b border-rose-100/20 shadow-sm"
-      isMenuOpen={isMenuOpen}
-      maxWidth="xl"
-      onMenuOpenChange={setIsMenuOpen}
-    >
-      <NavbarContent>
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden text-rose-900"
-        />
-        <NavbarBrand>
-          <Link className="flex items-center" href={"/" as Route}>
-            <span className="font-cinzel text-2xl tracking-[0.15em] text-rose-900 uppercase font-light">
-              ekagrata
-            </span>
-          </Link>
-        </NavbarBrand>
-      </NavbarContent>
+    <nav className="bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              {config?.data?.attributes.seo.metaImage && (
+                <Image
+                  src={getImageUrl(config.data.attributes.seo.metaImage.data.attributes.url)}
+                  alt={config.data.attributes.siteName}
+                  width={40}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+              )}
+              <span className="ml-2 text-xl font-medium text-gray-900">
+                {config?.data?.attributes.siteName || 'Ekagrata'}
+              </span>
+            </Link>
 
-      <NavbarContent className="hidden sm:flex gap-8" justify="center">
-        {navigation.map((item) => (
-          <NavbarItem key={item.name}>
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-primary"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+            {config?.data?.attributes.contact.whatsapp && (
+              <a
+                href={`https://wa.me/${config.data.attributes.contact.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                Contact on WhatsApp
+              </a>
+            )}
+          </div>
+
+          <div className="-mr-2 flex items-center sm:hidden">
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+            >
+              <span className="sr-only">Open main menu</span>
+              {isOpen ? (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div className={`${isOpen ? 'block' : 'hidden'} sm:hidden`}>
+        <div className="pt-2 pb-3 space-y-1">
+          {navigation.map((item) => (
             <Link
-              className="text-gray-600 hover:text-rose-900 transition-colors duration-300 font-light tracking-wide"
+              key={item.name}
               href={item.href}
+              className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsOpen(false)}
             >
               {item.name}
             </Link>
-          </NavbarItem>
-        ))}
-      </NavbarContent>
-
-      <NavbarContent justify="end">
-        <NavbarItem>
-          <Button
-            as={Link}
-            className="bg-rose-900 hover:bg-rose-800 text-white font-light px-6 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-            href={"/contact" as Route}
-          >
-            Contact Us
-          </Button>
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarMenu className="bg-white/95 backdrop-blur-lg pt-8">
-        {navigation.map((item) => (
-          <NavbarMenuItem key={item.name} className="py-3">
-            <Link
-              className="w-full text-gray-600 hover:text-rose-900 transition-colors duration-300 font-light tracking-wide text-lg"
-              href={item.href}
+          ))}
+          {config?.data?.attributes.contact.whatsapp && (
+            <a
+              href={`https://wa.me/${config.data.attributes.contact.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block pl-3 pr-4 py-2 text-base font-medium text-primary hover:text-primary-dark hover:bg-gray-50"
+              onClick={() => setIsOpen(false)}
             >
-              {item.name}
-            </Link>
-          </NavbarMenuItem>
-        ))}
-      </NavbarMenu>
-    </HeroNavbar>
+              Contact on WhatsApp
+            </a>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }

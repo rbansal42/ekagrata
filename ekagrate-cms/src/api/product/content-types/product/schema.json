@@ -4,45 +4,35 @@
   "info": {
     "singularName": "product",
     "pluralName": "products",
-    "displayName": "Product"
+    "displayName": "Product",
+    "description": "Handcrafted products by artisans"
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "name": {
+    "title": {
       "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
       "required": true
     },
     "description": {
       "type": "richtext",
       "required": true
     },
-    "shortDescription": {
-      "type": "text",
-      "required": true,
-      "maxLength": 200
-    },
     "price": {
       "type": "decimal",
-      "required": true
-    },
-    "whatsappNumber": {
-      "type": "string",
-      "required": true
-    },
-    "whatsappMessage": {
-      "type": "text"
+      "required": true,
+      "min": 0
     },
     "images": {
       "type": "media",
       "multiple": true,
-      "required": true,
-      "allowedTypes": ["images"]
-    },
-    "featuredImage": {
-      "type": "media",
-      "multiple": false,
       "required": true,
       "allowedTypes": ["images"]
     },
@@ -58,27 +48,14 @@
       "target": "api::category.category",
       "inversedBy": "products"
     },
-    "tags": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::tag.tag",
-      "inversedBy": "products"
-    },
-    "estimatedDelivery": {
-      "type": "string"
-    },
-    "isCustomizable": {
-      "type": "boolean",
-      "default": false
-    },
-    "customizationOptions": {
-      "type": "component",
-      "component": "product.customization-options",
-      "repeatable": true
-    },
     "featured": {
       "type": "boolean",
       "default": false
+    },
+    "metadata": {
+      "type": "json",
+      "required": false,
+      "description": "Additional product details like dimensions, materials, etc."
     }
   }
 } 

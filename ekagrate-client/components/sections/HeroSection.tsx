@@ -7,6 +7,9 @@ export async function HeroSection() {
   const { data: settings } = await getGlobalSettings();
   const whatsappLink = `https://wa.me/${settings.attributes.whatsapp_number}`;
 
+  // Replace any unsplash URLs with local placeholders or Strapi media
+  const backgroundImage = '/images/hero-background.jpg'; // Add this to public/images/
+
   return (
     <section className="relative flex flex-col items-center justify-center text-center min-h-[90vh] px-6 py-32">
       {/* Background Gradient */}

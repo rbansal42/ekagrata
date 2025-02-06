@@ -16,6 +16,11 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: [
+      'images.unsplash.com',
+      'localhost',
+      process.env.STRAPI_PRODUCTION_HOST
+    ],
   },
   experimental: {
     typedRoutes: true,

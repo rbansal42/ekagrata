@@ -12,7 +12,7 @@ import clsx from "clsx";
 
 import { Providers } from "./providers";
 
-import { Navbar } from "@/components/navbar";
+import Navbar from "@/components/navbar";
 
 const workSans = Work_Sans({
   subsets: ["latin"],

@@ -4,7 +4,8 @@ import type { Route } from "next";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getStrapiMedia, Product, Category, Artisan } from "@/lib/strapi";
+import { getImageUrl } from "@/lib/utils";
+import type { Product, Category, Artisan } from "@/types";
 
 const sortOptions = [
   { id: "newest", name: "Newest" },
@@ -29,21 +30,21 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
-  const { name, price, description, images, slug } = product.attributes;
-  const imageUrl = getStrapiMedia(images.data[0].attributes.url);
+  const { title, price, description, images, slug } = product.attributes;
+  const imageUrl = getImageUrl(images.data[0].attributes.url);
 
   return (
     <Link href={`/products/${slug}` as Route} className="group">
       <div className="aspect-square relative rounded-xl overflow-hidden bg-rose-50 mb-4">
         <Image
           src={imageUrl}
-          alt={name}
+          alt={title}
           fill
           className="object-cover transition-all duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      <h3 className="font-light text-lg tracking-wide group-hover:text-rose-900 transition-colors duration-300">{name}</h3>
+      <h3 className="font-light text-lg tracking-wide group-hover:text-rose-900 transition-colors duration-300">{title}</h3>
       <p className="text-rose-900 font-light">₹{price.toLocaleString()}</p>
       <p className="text-gray-600 font-light leading-relaxed line-clamp-2 tracking-wide mt-2">{description}</p>
     </Link>

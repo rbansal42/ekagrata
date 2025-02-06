@@ -1,421 +1,233 @@
 import qs from "qs";
-
-export interface Product {
-  id: number;
-  attributes: {
-    name: string;
-    description: string;
-    shortDescription: string;
-    price: number;
-    stock: number;
-    slug: string;
-    whatsappNumber: string;
-    whatsappMessage?: string;
-    images: {
-      data: Array<{
-        id: number;
-        attributes: {
-          url: string;
-          alternativeText: string;
-        };
-      }>;
-    };
-    featuredImage: {
-      data: {
-        id: number;
-        attributes: {
-          url: string;
-          alternativeText: string;
-        };
-      };
-    };
-    category: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-          description: string;
-          image: {
-            data: {
-              attributes: {
-                url: string;
-                alternativeText: string;
-              };
-            };
-          };
-        };
-      };
-    };
-    artisan: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          specialization: string;
-          bio: string;
-          location: string;
-          slug: string;
-          image: {
-            data: {
-              attributes: {
-                url: string;
-                alternativeText: string;
-              };
-            };
-          };
-        };
-      };
-    };
-    tags: {
-      data: Array<{
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      }>;
-    };
-    estimatedDelivery: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-
-export interface Category {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    description: string;
-    image: {
-      data: {
-        attributes: {
-          url: string;
-          alternativeText: string;
-        };
-      };
-    };
-  };
-}
-
-export interface Artisan {
-  id: number;
-  attributes: {
-    name: string;
-    specialization: string;
-    bio: string;
-    location: string;
-    slug: string;
-    image: {
-      data: {
-        attributes: {
-          url: string;
-          alternativeText: string;
-        };
-      };
-    };
-  };
-}
-
-export interface GlobalSettings {
-  id: number;
-  attributes: {
-    whatsapp_number: string;
-    default_whatsapp_message?: string;
-    contact_email: string;
-    instagram_handle?: string;
-  };
-}
-
-interface ProductFilters {
-  category?: string;
-  artisan?: string;
-  search?: string;
-  page?: number;
-  pageSize?: number;
-  inStock?: boolean;
-  priceRange?: {
-    min?: number;
-    max?: number;
-  };
-  sortBy?: string;
-}
-
-interface StrapiResponse<T> {
-  data: T;
-  meta: {
-    pagination?: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
-}
+import {
+  Product,
+  Artisan,
+  Category,
+  SiteConfig,
+  StrapiResponse
+} from '../types';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
-async function fetchAPI<T>(endpoint: string, options = {}): Promise<T> {
-  const mergedOptions = {
-    headers: {
-      "Content-Type": "application/json",
-      ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
-    },
-    ...options,
+type QueryParams = {
+  filters?: Record<string, any>;
+  populate?: string[] | Record<string, any>;
+  pagination?: {
+    page?: number;
+    pageSize?: number;
   };
+  sort?: string[];
+};
 
-  const requestUrl = `${STRAPI_URL}/api/${endpoint}`;
+async function fetchAPI<T>(endpoint: string, params?: QueryParams): Promise<StrapiResponse<T>> {
+  const queryString = params
+    ? `?${qs.stringify({
+        populate: params.populate,
+        ...(params.filters && { filters: params.filters }),
+        ...(params.sort && { sort: params.sort }),
+        ...(params.pagination && {
+          pagination: {
+            page: params.pagination.page,
+            pageSize: params.pagination.pageSize
+          }
+        })
+      }, {
+        encodeValuesOnly: true,
+        arrayFormat: 'brackets'
+      })}`
+    : '';
 
-  console.log("Fetching URL:", requestUrl);
-  console.log("Request Headers:", mergedOptions.headers);
-
+  const url = `${STRAPI_URL}/api/${endpoint}${queryString}`;
+  console.log(`[Strapi API] Making request to: ${url}`);
+  console.log(`[Strapi API] Environment: STRAPI_URL=${STRAPI_URL}`);
+  
   try {
-    const res = await fetch(requestUrl, mergedOptions);
-
+    const res = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(STRAPI_TOKEN && { Authorization: `Bearer ${STRAPI_TOKEN}` })
+      }
+    });
+    
+    console.log(`[Strapi API] Response status: ${res.status}`);
+    
     if (!res.ok) {
-      console.error("Fetch failed:", {
-        status: res.status,
-        statusText: res.statusText,
-        body: await res.text(),
-      });
-      throw new Error(`API error: ${res.status}`);
+      const errorText = await res.text();
+      console.error(`[Strapi API] Error response: ${errorText}`);
+      throw new Error(`Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`);
     }
 
     const data = await res.json();
-
+    console.log(`[Strapi API] Success response for ${endpoint}:`, {
+      dataLength: Array.isArray(data.data) ? data.data.length : 'single item',
+      meta: data.meta
+    });
+    
     return data;
   } catch (error) {
-    console.error("API call failed:", error);
+    console.error(`[Strapi API] Request failed for ${endpoint}:`, error);
     throw error;
   }
 }
 
-export async function getProducts(
-  filters: ProductFilters = {},
-): Promise<StrapiResponse<Product[]>> {
-  const query = qs.stringify(
-    {
-      filters: {
-        ...(filters.category
-          ? { "category.slug": { $eq: filters.category } }
-          : {}),
-        ...(filters.artisan
-          ? { "artisan.slug": { $eq: filters.artisan } }
-          : {}),
-        ...(filters.search
-          ? {
-              $or: [
-                { name: { $containsi: filters.search } },
-                { description: { $containsi: filters.search } },
-              ],
-            }
-          : {}),
-        ...(filters.inStock ? { stock: { $gt: 0 } } : {}),
-        ...(filters.priceRange?.min || filters.priceRange?.max
-          ? {
-              price: {
-                ...(filters.priceRange.min ? { $gte: filters.priceRange.min } : {}),
-                ...(filters.priceRange.max ? { $lte: filters.priceRange.max } : {}),
-              },
-            }
-          : {}),
+// Products API
+export async function getProducts(params?: QueryParams): Promise<StrapiResponse<Product[]>> {
+  return fetchAPI<Product[]>('products', {
+    populate: {
+      images: true,
+      artisan: {
+        populate: ['avatar']
       },
-      populate: {
-        images: true,
-        featuredImage: true,
-        category: {
-          populate: ['image']
-        },
-        artisan: {
-          populate: ['image']
-        },
-        tags: true
-      },
-      pagination: {
-        page: filters.page || 1,
-        pageSize: filters.pageSize || 12,
-      },
-      ...(filters.sortBy
-        ? {
-            sort: filters.sortBy,
-          }
-        : { sort: ["createdAt:desc"] }),
+      category: true
     },
-    {
-      encodeValuesOnly: true,
+    ...params
+  });
+}
+
+export async function getProduct(slug: string): Promise<StrapiResponse<Product>> {
+  const response = await fetchAPI<Product[]>('products', {
+    filters: { slug },
+    populate: {
+      images: true,
+      artisan: {
+        populate: ['avatar']
+      },
+      category: true
     }
-  );
-
-  return fetchAPI(`products?${query}`);
-}
-
-export async function getCategories(): Promise<StrapiResponse<Category[]>> {
-  const query = qs.stringify(
-    {
-      populate: {
-        image: true
-      }
-    },
-    {
-      encodeValuesOnly: true,
-    }
-  );
-  return fetchAPI(`categories?${query}`);
-}
-
-export async function getArtisans(): Promise<StrapiResponse<Artisan[]>> {
-  const query = qs.stringify(
-    {
-      populate: {
-        image: true
-      }
-    },
-    {
-      encodeValuesOnly: true,
-    }
-  );
-  return fetchAPI(`artisans?${query}`);
-}
-
-export async function getProduct(
-  slug: string,
-): Promise<StrapiResponse<Product>> {
-  console.log("Getting product with slug:", slug);
-  const query = qs.stringify(
-    {
-      filters: {
-        slug: { $eq: slug },
-      },
-      populate: {
-        featuredImage: true,
-        images: true,
-        category: {
-          populate: ["image"],
-        },
-        artisan: {
-          populate: ["image"],
-        },
-        tags: true,
-      },
-    },
-    { encodeValuesOnly: true },
-  );
-
-  return fetchAPI<StrapiResponse<Product>>(`products?${query}`);
-}
-
-export async function getArtisan(
-  slug: string,
-): Promise<StrapiResponse<Artisan>> {
-  console.log("Getting artisan with slug:", slug);
-  const query = qs.stringify(
-    {
-      filters: {
-        slug: { $eq: slug },
-      },
-      populate: ["image"],
-    },
-    { encodeValuesOnly: true },
-  );
-
-  return fetchAPI<StrapiResponse<Artisan>>(`artisans?${query}`);
-}
-
-export async function getGlobalSettings(): Promise<StrapiResponse<GlobalSettings>> {
-  try {
-    const response = await fetchAPI('site-config');
-    if (!response.data) {
-      // Return default values if no settings exist
-      return {
-        data: {
-          id: 0,
-          attributes: {
-            whatsapp_number: process.env.DEFAULT_WHATSAPP_NUMBER || '',
-            default_whatsapp_message: 'Hi, I am interested in your products',
-            contact_email: process.env.DEFAULT_CONTACT_EMAIL || 'contact@ekagrata.in',
-            instagram_handle: process.env.DEFAULT_INSTAGRAM_HANDLE || 'ekagrata.crafts'
-          }
-        },
-        meta: {}
-      };
-    }
-    return response;
-  } catch (error) {
-    console.error('Failed to fetch global settings:', error);
-    // Return default values on error
-    return {
-      data: {
-        id: 0,
-        attributes: {
-          whatsapp_number: process.env.DEFAULT_WHATSAPP_NUMBER || '',
-          default_whatsapp_message: 'Hi, I am interested in your products',
-          contact_email: process.env.DEFAULT_CONTACT_EMAIL || 'contact@ekagrata.in',
-          instagram_handle: process.env.DEFAULT_INSTAGRAM_HANDLE || 'ekagrata.crafts'
-        }
-      },
-      meta: {}
-    };
+  });
+  
+  if (!response.data?.[0]) {
+    throw new Error('Product not found');
   }
+  
+  return { data: response.data[0], meta: response.meta };
 }
 
-export function formatWhatsAppLink(product: Product, settings: GlobalSettings) {
-  const number = product.attributes.whatsappNumber || settings.attributes.whatsapp_number;
-  const message = product.attributes.whatsappMessage || settings.attributes.default_whatsapp_message || '';
-  const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/${number}?text=${encodedMessage}`;
+// Artisans API
+export async function getArtisans(params?: QueryParams): Promise<StrapiResponse<Artisan[]>> {
+  return fetchAPI<Artisan[]>('artisans', {
+    populate: ['avatar', 'location', 'contact'],
+    ...params
+  });
 }
 
-export function getStrapiMedia(url: string) {
-  if (!url) return '/images/fallback-product.jpg';
+export async function getArtisan(slug: string): Promise<StrapiResponse<Artisan>> {
+  const response = await fetchAPI<Artisan[]>('artisans', {
+    filters: { slug },
+    populate: ['avatar', 'location', 'contact', 'products']
+  });
+  
+  if (!response.data?.[0]) {
+    throw new Error('Artisan not found');
+  }
+  
+  return { data: response.data[0], meta: response.meta };
+}
+
+// Categories API
+export async function getCategories(params?: QueryParams): Promise<StrapiResponse<Category[]>> {
+  return fetchAPI<Category[]>('categories', {
+    populate: ['image'],
+    sort: ['order:asc'],
+    ...params
+  });
+}
+
+export async function getCategory(slug: string): Promise<StrapiResponse<Category>> {
+  const params: QueryParams = {
+    filters: {
+      slug: {
+        $eq: slug
+      }
+    },
+    populate: {
+      image: true,
+      products: {
+        populate: ['images', 'artisan']
+      }
+    }
+  };
+  
+  const response = await fetchAPI<Category[]>('categories', params);
+  if (!response.data?.[0]) {
+    throw new Error('Category not found');
+  }
+  return { data: response.data[0], meta: response.meta };
+}
+
+// Site Configuration API
+export async function getSiteConfig(): Promise<StrapiResponse<SiteConfig>> {
+  return fetchAPI<SiteConfig>('site-config', {
+    populate: {
+      seo: {
+        populate: ['metaImage']
+      },
+      contact: true,
+      socialMedia: true,
+      featuredProducts: {
+        populate: ['images', 'artisan']
+      },
+      featuredArtisans: {
+        populate: ['avatar', 'location']
+      }
+    }
+  });
+}
+
+// Search API
+export async function searchProducts(query: string): Promise<StrapiResponse<Product[]>> {
+  const params: QueryParams = {
+    filters: {
+      $or: [
+        { title: { $containsi: query } },
+        { description: { $containsi: query } }
+      ]
+    },
+    populate: {
+      images: true,
+      artisan: {
+        populate: ['avatar']
+      },
+      category: true
+    }
+  };
+  
+  return fetchAPI<Product[]>('products', params);
+}
+
+// Featured Content API
+export async function getFeaturedProducts(): Promise<StrapiResponse<Product[]>> {
+  return getProducts({
+    filters: {
+      featured: true
+    },
+    pagination: {
+      pageSize: 6
+    }
+  });
+}
+
+export async function getFeaturedArtisans(): Promise<StrapiResponse<Artisan[]>> {
+  return getArtisans({
+    filters: {
+      featured: true
+    },
+    pagination: {
+      pageSize: 4
+    }
+  });
+}
+
+// Helper function to get full URL for media
+export function getStrapiMediaUrl(url: string): string {
+  if (!url) return '';
   if (url.startsWith('http')) return url;
   return `${STRAPI_URL}${url}`;
 }
 
-export async function getFeaturedProducts(): Promise<StrapiResponse<Product[]>> {
-  const query = qs.stringify(
-    {
-      filters: {
-        featured: { $eq: true }
-      },
-      populate: {
-        featuredImage: true,
-        category: {
-          populate: ['image']
-        },
-        artisan: {
-          populate: ['image']
-        }
-      },
-      pagination: {
-        pageSize: 6
-      },
-      sort: ['createdAt:desc']
-    },
-    {
-      encodeValuesOnly: true,
-    }
-  );
-  return fetchAPI(`products?${query}`);
-}
-
-export async function getFeaturedArtisans(): Promise<StrapiResponse<Artisan[]>> {
-  const query = qs.stringify(
-    {
-      filters: {
-        featured: { $eq: true }
-      },
-      populate: {
-        image: true
-      },
-      pagination: {
-        pageSize: 3
-      }
-    },
-    {
-      encodeValuesOnly: true,
-    }
-  );
-  return fetchAPI(`artisans?${query}`);
+export function getImageUrl(url: string | null | undefined): string {
+  if (!url) return '/images/placeholder.jpg';
+  if (url.startsWith('http')) return url;
+  return `${STRAPI_URL}${url}`;
 }

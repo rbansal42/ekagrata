@@ -4,33 +4,44 @@
   "info": {
     "singularName": "artisan",
     "pluralName": "artisans",
-    "displayName": "Artisan"
+    "displayName": "Artisan",
+    "description": "Craftspeople and their profiles"
   },
   "options": {
     "draftAndPublish": true
   },
-  "pluginOptions": {},
   "attributes": {
     "name": {
       "type": "string",
       "required": true
     },
-    "specialization": {
-      "type": "string",
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
       "required": true
     },
     "bio": {
-      "type": "text",
+      "type": "richtext",
       "required": true
     },
-    "location": {
+    "expertise": {
       "type": "string",
       "required": true
     },
-    "image": {
+    "location": {
+      "type": "component",
+      "component": "shared.location",
+      "required": true
+    },
+    "avatar": {
       "type": "media",
       "multiple": false,
       "required": true,
+      "allowedTypes": ["images"]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
       "allowedTypes": ["images"]
     },
     "products": {
@@ -38,6 +49,11 @@
       "relation": "oneToMany",
       "target": "api::product.product",
       "mappedBy": "artisan"
+    },
+    "contact": {
+      "type": "component",
+      "component": "shared.contact",
+      "required": true
     },
     "featured": {
       "type": "boolean",
