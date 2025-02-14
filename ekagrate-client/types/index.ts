@@ -4,8 +4,9 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-interface StrapiImage {
+export interface StrapiImage {
   data: {
+    id: number;
     attributes: {
       url: string;
       alternativeText: string;
@@ -13,35 +14,36 @@ interface StrapiImage {
   };
 }
 
-interface Materials {
-  primaryMaterial: string;
-  additionalMaterials?: string;
-  finish?: string;
-  color?: string;
-  isEcoFriendly: boolean;
+export interface StrapiImages {
+  data: Array<{
+    id: number;
+    attributes: {
+      url: string;
+      alternativeText: string;
+    };
+  }>;
 }
 
-interface Dimensions {
-  length: number;
-  width: number;
-  height?: number;
-  weight?: number;
-  unit: 'cm' | 'inch' | 'm';
-  weightUnit?: 'g' | 'kg';
+export interface Category {
+  id: number;
+  attributes: {
+    name: string;
+    description: string;
+    slug: string;
+    image: StrapiImage;
+  };
 }
 
-interface Specification {
-  label: string;
-  value: string;
-  icon?: string;
-}
-
-interface CustomizationOption {
-  name: string;
-  description?: string;
-  type: 'color' | 'size' | 'material' | 'design' | 'text';
-  options?: any;
-  priceAdjustment?: number;
+export interface Artisan {
+  id: number;
+  attributes: {
+    name: string;
+    specialization: string;
+    bio: string;
+    location: string;
+    image: StrapiImage;
+    slug: string;
+  };
 }
 
 export interface Product {
@@ -53,37 +55,25 @@ export interface Product {
     price: number;
     whatsappNumber: string;
     whatsappMessage?: string;
-    images: {
-      data: Array<{
-        attributes: {
-          url: string;
-          alternativeText: string;
-        };
-      }>;
+    stock: number;
+    slug: string;
+    images: StrapiImages;
+    featuredImage?: StrapiImage;
+    category: {
+      data: Category;
     };
-    featuredImage: StrapiImage;
-    materials: Materials;
-    dimensions: Dimensions;
-    specifications?: Specification[];
-    careInstructions?: string;
-    estimatedDelivery?: string;
-    isCustomizable: boolean;
-    customizationOptions?: CustomizationOption[];
     artisan: {
-      data: {
-        id: number;
-        attributes: Omit<Artisan["attributes"], "products">;
-      };
+      data: Artisan;
     };
-    category?: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      };
-    };
+    estimatedDelivery?: string;
+    isCustomizable?: boolean;
+    customizationOptions?: Array<{
+      name: string;
+      description?: string;
+      type: "color" | "size" | "material" | "design" | "text";
+      options?: any;
+      priceAdjustment?: number;
+    }>;
     tags?: {
       data: Array<{
         id: number;
@@ -93,19 +83,26 @@ export interface Product {
         };
       }>;
     };
+    createdAt: string;
+    updatedAt: string;
   };
 }
 
-export interface Artisan {
-  id: string;
-  attributes: {
-    name: string;
-    bio: string;
-    image: Media;
-    products: {
-      data: Product[];
-    };
-  };
+export interface ProductFilters {
+  categories?: string[];
+  artisans?: string[];
+  priceRange?: string;
+  inStock?: boolean;
+  sortBy?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
 }
 
 export interface Story {
@@ -124,9 +121,9 @@ export interface Story {
 }
 
 export interface StrapiResponse<T> {
-  data: T[];
-  meta: {
-    pagination: {
+  data: T;
+  meta?: {
+    pagination?: {
       page: number;
       pageSize: number;
       pageCount: number;
@@ -134,3 +131,5 @@ export interface StrapiResponse<T> {
     };
   };
 }
+
+export type FetchResponse<T> = StrapiResponse<T>;

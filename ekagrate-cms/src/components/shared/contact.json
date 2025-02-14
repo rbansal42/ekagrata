@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_contacts",
+  "info": {
+    "displayName": "Contact",
+    "description": "Contact information"
+  },
+  "options": {},
+  "attributes": {
+    "whatsapp": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": false
+    },
+    "instagram": {
+      "type": "string",
+      "required": false
+    },
+    "defaultMessage": {
+      "type": "text",
+      "required": false
+    }
+  }
+} 

@@ -1,69 +1,42 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Ekagrata",
+  description: "Discover unique artisan products at Ekagrata - A Rotaract project promoting local artisans and their craftsmanship.",
   navItems: [
     {
       label: "Home",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Products",
+      href: "/products",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "Artisans",
+      href: "/artisans",
     },
     {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
-    },
+      label: "Contact",
+      href: "/contact",
+    }
   ],
   navMenuItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      label: "Products",
+      href: "/products",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: "Artisans",
+      href: "/artisans",
     },
     {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
-    },
+      label: "Contact",
+      href: "/contact",
+    }
   ],
   links: {
-    github: "https://github.com/heroui-inc/heroui",
-    twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
+    instagram: "https://instagram.com/ekagrata",
+    facebook: "https://facebook.com/ekagrata",
   },
 };

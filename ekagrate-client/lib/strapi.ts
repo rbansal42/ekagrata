@@ -1,250 +1,233 @@
-import { notFound } from "next/navigation";
-import { Product, Artisan, StrapiResponse } from "@/types";
+import qs from "qs";
+import {
+  Product,
+  Artisan,
+  Category,
+  SiteConfig,
+  StrapiResponse
+} from '../types';
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
-// Dummy data for development
-const DUMMY_DATA = {
-  products: [
-    {
-      id: 1,
-      attributes: {
-        name: "Handwoven Silk Saree",
-        description: "Traditional handwoven silk saree with intricate designs",
-        shortDescription: "Exquisite handwoven silk saree with traditional motifs",
-        price: 15000,
-        whatsappNumber: "919876543210",
-        whatsappMessage: "Hi, I'm interested in the Handwoven Silk Saree",
-        images: {
-          data: [
-            {
-              attributes: {
-                url: "https://picsum.photos/seed/saree1/600/600",
-                alternativeText: "Handwoven Silk Saree View 1",
-              },
-            },
-            {
-              attributes: {
-                url: "https://picsum.photos/seed/saree2/600/600",
-                alternativeText: "Handwoven Silk Saree View 2",
-              },
-            },
-            {
-              attributes: {
-                url: "https://picsum.photos/seed/saree3/600/600",
-                alternativeText: "Handwoven Silk Saree View 3",
-              },
-            }
-          ],
-        },
-        featuredImage: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/saree-main/600/600",
-              alternativeText: "Handwoven Silk Saree Main View",
-            },
-          },
-        },
-        artisan: {
-          data: {
-            id: 1,
-            attributes: {
-              name: "Rajesh Kumar",
-              specialization: "Silk Weaving",
-            },
-          },
-        },
-      },
-    },
-    {
-      id: 2,
-      attributes: {
-        name: "Brass Metal Art",
-        description: "Handcrafted brass metal art with traditional motifs",
-        shortDescription: "Beautiful handcrafted brass metal art piece",
-        price: 8500,
-        whatsappNumber: "919876543210",
-        whatsappMessage: "Hi, I'm interested in the Brass Metal Art",
-        images: {
-          data: [
-            {
-              attributes: {
-                url: "https://picsum.photos/seed/brass1/600/600",
-                alternativeText: "Brass Metal Art View 1",
-              },
-            },
-            {
-              attributes: {
-                url: "https://picsum.photos/seed/brass2/600/600",
-                alternativeText: "Brass Metal Art View 2",
-              },
-            }
-          ],
-        },
-        featuredImage: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/brass-main/600/600",
-              alternativeText: "Brass Metal Art Main View",
-            },
-          },
-        },
-        artisan: {
-          data: {
-            id: 2,
-            attributes: {
-              name: "Meena Kumari",
-              specialization: "Metal Work",
-            },
-          },
-        },
-      },
-    },
-  ],
-  artisans: [
-    {
-      id: 1,
-      attributes: {
-        name: "Rajesh Kumar",
-        specialization: "Silk Weaving",
-        bio: "Master weaver with 20 years of experience",
-        location: "Varanasi, UP",
-        image: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/artisan1/400/400",
-              alternativeText: "Rajesh Kumar",
-            },
-          },
-        },
-      },
-    },
-    {
-      id: 2,
-      attributes: {
-        name: "Meena Kumari",
-        specialization: "Metal Work",
-        bio: "Award-winning metal artist specializing in brass work",
-        location: "Moradabad, UP",
-        image: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/artisan2/400/400",
-              alternativeText: "Meena Kumari",
-            },
-          },
-        },
-      },
-    },
-  ],
-  stories: [
-    {
-      id: 1,
-      attributes: {
-        title: "The Art of Silk Weaving",
-        preview: "Discover the ancient tradition of silk weaving",
-        content: "Long form content about silk weaving...",
-        image: {
-          data: {
-            attributes: {
-              url: "https://picsum.photos/seed/story1/800/450",
-              alternativeText: "Silk Weaving Process",
-            },
-          },
-        },
-        artisan: {
-          data: {
-            id: 1,
-            attributes: {
-              name: "Rajesh Kumar",
-              specialization: "Silk Weaving",
-            },
-          },
-        },
-      },
-    },
-  ],
+type QueryParams = {
+  filters?: Record<string, any>;
+  populate?: string[] | Record<string, any>;
+  pagination?: {
+    page?: number;
+    pageSize?: number;
+  };
+  sort?: string[];
 };
 
-class StrapiError extends Error {
-  constructor(message: string, public status: number) {
-    super(message);
-    this.name = 'StrapiError';
+async function fetchAPI<T>(endpoint: string, params?: QueryParams): Promise<StrapiResponse<T>> {
+  const queryString = params
+    ? `?${qs.stringify({
+        populate: params.populate,
+        ...(params.filters && { filters: params.filters }),
+        ...(params.sort && { sort: params.sort }),
+        ...(params.pagination && {
+          pagination: {
+            page: params.pagination.page,
+            pageSize: params.pagination.pageSize
+          }
+        })
+      }, {
+        encodeValuesOnly: true,
+        arrayFormat: 'brackets'
+      })}`
+    : '';
+
+  const url = `${STRAPI_URL}/api/${endpoint}${queryString}`;
+  console.log(`[Strapi API] Making request to: ${url}`);
+  console.log(`[Strapi API] Environment: STRAPI_URL=${STRAPI_URL}`);
+  
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(STRAPI_TOKEN && { Authorization: `Bearer ${STRAPI_TOKEN}` })
+      }
+    });
+    
+    console.log(`[Strapi API] Response status: ${res.status}`);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`[Strapi API] Error response: ${errorText}`);
+      throw new Error(`Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    console.log(`[Strapi API] Success response for ${endpoint}:`, {
+      dataLength: Array.isArray(data.data) ? data.data.length : 'single item',
+      meta: data.meta
+    });
+    
+    return data;
+  } catch (error) {
+    console.error(`[Strapi API] Request failed for ${endpoint}:`, error);
+    throw error;
   }
 }
 
-async function fetchAPI<T>(endpoint: string, cache: RequestCache = 'force-cache'): Promise<StrapiResponse<T>> {
-  if (process.env.NODE_ENV === 'development') {
-    // Return dummy data in development
-    const type = endpoint.split('?')[0].split('/').filter(Boolean)[0];
-    const id = endpoint.split('/')[1]?.split('?')[0];
-    
-    if (id) {
-      const item = DUMMY_DATA[type as keyof typeof DUMMY_DATA]?.find(i => i.id === Number(id));
-      return { data: item } as unknown as StrapiResponse<T>;
-    }
-    
-    return { 
-      data: DUMMY_DATA[type as keyof typeof DUMMY_DATA] as any,
-      meta: { pagination: { page: 1, pageSize: 10, pageCount: 1, total: 1 } }
-    };
-  }
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  };
-
-  if (STRAPI_TOKEN) {
-    headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
-  }
-
-  const res = await fetch(`${STRAPI_URL}/api/${endpoint}`, { 
-    headers,
-    cache,
+// Products API
+export async function getProducts(params?: QueryParams): Promise<StrapiResponse<Product[]>> {
+  return fetchAPI<Product[]>('products', {
+    populate: {
+      images: true,
+      artisan: {
+        populate: ['avatar']
+      },
+      category: true
+    },
+    ...params
   });
+}
 
-  if (!res.ok) {
-    if (res.status === 404) {
-      notFound();
+export async function getProduct(slug: string): Promise<StrapiResponse<Product>> {
+  const response = await fetchAPI<Product[]>('products', {
+    filters: { slug },
+    populate: {
+      images: true,
+      artisan: {
+        populate: ['avatar']
+      },
+      category: true
     }
-    throw new StrapiError(`Failed to fetch ${endpoint}`, res.status);
+  });
+  
+  if (!response.data?.[0]) {
+    throw new Error('Product not found');
   }
-
-  return res.json();
+  
+  return { data: response.data[0], meta: response.meta };
 }
 
-export async function getProducts(revalidate?: number): Promise<Product[]> {
-  const response = await fetchAPI<Product[]>("products?populate=*", revalidate ? 'no-store' : 'force-cache');
-  return (response.data as unknown as Product[]) || [];
+// Artisans API
+export async function getArtisans(params?: QueryParams): Promise<StrapiResponse<Artisan[]>> {
+  return fetchAPI<Artisan[]>('artisans', {
+    populate: ['avatar', 'location', 'contact'],
+    ...params
+  });
 }
 
-export async function getProduct(id: string): Promise<Product> {
-  const response = await fetchAPI<{ data: Product }>(`products/${id}?populate=*`);
-  return response.data as unknown as Product;
+export async function getArtisan(slug: string): Promise<StrapiResponse<Artisan>> {
+  const response = await fetchAPI<Artisan[]>('artisans', {
+    filters: { slug },
+    populate: ['avatar', 'location', 'contact', 'products']
+  });
+  
+  if (!response.data?.[0]) {
+    throw new Error('Artisan not found');
+  }
+  
+  return { data: response.data[0], meta: response.meta };
 }
 
-export async function getArtisans(revalidate?: number): Promise<Artisan[]> {
-  const response = await fetchAPI<Artisan[]>("artisans?populate=*", revalidate ? 'no-store' : 'force-cache');
-  return (response.data as unknown as Artisan[]) || [];
+// Categories API
+export async function getCategories(params?: QueryParams): Promise<StrapiResponse<Category[]>> {
+  return fetchAPI<Category[]>('categories', {
+    populate: ['image'],
+    sort: ['order:asc'],
+    ...params
+  });
 }
 
-export async function getArtisan(id: string): Promise<Artisan> {
-  const response = await fetchAPI<{ data: Artisan }>(`artisans/${id}?populate=*`);
-  return response.data as unknown as Artisan;
+export async function getCategory(slug: string): Promise<StrapiResponse<Category>> {
+  const params: QueryParams = {
+    filters: {
+      slug: {
+        $eq: slug
+      }
+    },
+    populate: {
+      image: true,
+      products: {
+        populate: ['images', 'artisan']
+      }
+    }
+  };
+  
+  const response = await fetchAPI<Category[]>('categories', params);
+  if (!response.data?.[0]) {
+    throw new Error('Category not found');
+  }
+  return { data: response.data[0], meta: response.meta };
 }
 
-export function formatWhatsAppLink(product: Product): string {
-  const message = encodeURIComponent(
-    product.attributes.whatsappMessage || 
-    `Hi, I'm interested in ${product.attributes.name}`
-  );
-  return `https://wa.me/${product.attributes.whatsappNumber}?text=${message}`;
+// Site Configuration API
+export async function getSiteConfig(): Promise<StrapiResponse<SiteConfig>> {
+  return fetchAPI<SiteConfig>('site-config', {
+    populate: {
+      seo: {
+        populate: ['metaImage']
+      },
+      contact: true,
+      socialMedia: true,
+      featuredProducts: {
+        populate: ['images', 'artisan']
+      },
+      featuredArtisans: {
+        populate: ['avatar', 'location']
+      }
+    }
+  });
 }
 
-export function getStrapiMedia(url: string | null): string {
-  if (!url) return "https://picsum.photos/600/400?blur=2";
-  if (url.startsWith("/dummy")) return url; // Handle dummy data URLs
-  if (url.startsWith("http")) return url;
+// Search API
+export async function searchProducts(query: string): Promise<StrapiResponse<Product[]>> {
+  const params: QueryParams = {
+    filters: {
+      $or: [
+        { title: { $containsi: query } },
+        { description: { $containsi: query } }
+      ]
+    },
+    populate: {
+      images: true,
+      artisan: {
+        populate: ['avatar']
+      },
+      category: true
+    }
+  };
+  
+  return fetchAPI<Product[]>('products', params);
+}
+
+// Featured Content API
+export async function getFeaturedProducts(): Promise<StrapiResponse<Product[]>> {
+  return getProducts({
+    filters: {
+      featured: true
+    },
+    pagination: {
+      pageSize: 6
+    }
+  });
+}
+
+export async function getFeaturedArtisans(): Promise<StrapiResponse<Artisan[]>> {
+  return getArtisans({
+    filters: {
+      featured: true
+    },
+    pagination: {
+      pageSize: 4
+    }
+  });
+}
+
+// Helper function to get full URL for media
+export function getStrapiMediaUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
   return `${STRAPI_URL}${url}`;
-} 
+}
+
+export function getImageUrl(url: string | null | undefined): string {
+  if (!url) return '/images/placeholder.jpg';
+  if (url.startsWith('http')) return url;
+  return `${STRAPI_URL}${url}`;
+}

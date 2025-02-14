@@ -1,0 +1,58 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_configs",
+  "info": {
+    "singularName": "site-config",
+    "pluralName": "site-configs",
+    "displayName": "Site Configuration",
+    "description": "Global site settings and configuration"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "populateCreatorFields": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "siteName": {
+      "type": "string",
+      "required": true,
+      "default": "Ekagrata"
+    },
+    "siteDescription": {
+      "type": "text",
+      "required": true
+    },
+    "contact": {
+      "type": "component",
+      "component": "shared.contact",
+      "required": true
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "required": true
+    },
+    "socialMedia": {
+      "type": "component",
+      "component": "shared.social-media",
+      "required": true
+    },
+    "featuredProducts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    },
+    "featuredArtisans": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::artisan.artisan"
+    }
+  }
+} 

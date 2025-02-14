@@ -372,6 +372,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiArtisanArtisan extends Struct.CollectionTypeSchema {
   collectionName: 'artisans';
   info: {
+    description: 'Craftspeople and their profiles';
     displayName: 'Artisan';
     pluralName: 'artisans';
     singularName: 'artisan';
@@ -380,22 +381,28 @@ export interface ApiArtisanArtisan extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    bio: Schema.Attribute.Text & Schema.Attribute.Required;
+    avatar: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    bio: Schema.Attribute.RichText & Schema.Attribute.Required;
+    contact: Schema.Attribute.Component<'shared.contact', false> &
+      Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    expertise: Schema.Attribute.String & Schema.Attribute.Required;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    gallery: Schema.Attribute.Media<'images', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::artisan.artisan'
     > &
       Schema.Attribute.Private;
-    location: Schema.Attribute.String & Schema.Attribute.Required;
+    location: Schema.Attribute.Component<'shared.location', false> &
+      Schema.Attribute.Required;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
-    specialization: Schema.Attribute.String & Schema.Attribute.Required;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -405,7 +412,7 @@ export interface ApiArtisanArtisan extends Struct.CollectionTypeSchema {
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
-    description: 'Product categories';
+    description: 'Product categories and collections';
     displayName: 'Category';
     pluralName: 'categories';
     singularName: 'category';
@@ -417,8 +424,9 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    image: Schema.Attribute.Media<'images'>;
+    description: Schema.Attribute.RichText;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -428,6 +436,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
@@ -440,6 +449,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
+    description: 'Handcrafted products by artisans';
     displayName: 'Product';
     pluralName: 'products';
     singularName: 'product';
@@ -449,46 +459,91 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
   attributes: {
     artisan: Schema.Attribute.Relation<'manyToOne', 'api::artisan.artisan'>;
-    careInstructions: Schema.Attribute.RichText;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    customizationOptions: Schema.Attribute.Component<
-      'product.customization-options',
-      true
-    >;
     description: Schema.Attribute.RichText & Schema.Attribute.Required;
-    dimensions: Schema.Attribute.Component<'product.dimensions', false> &
-      Schema.Attribute.Required;
-    estimatedDelivery: Schema.Attribute.String;
-    featuredImage: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     images: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
-    isCustomizable: Schema.Attribute.Boolean &
-      Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product.product'
     > &
       Schema.Attribute.Private;
-    materials: Schema.Attribute.Component<'product.materials', false> &
-      Schema.Attribute.Required;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    price: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    shortDescription: Schema.Attribute.Text &
+    metadata: Schema.Attribute.JSON;
+    price: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 200;
-      }>;
-    specifications: Schema.Attribute.Component<'product.specifications', true>;
-    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    whatsappMessage: Schema.Attribute.Text;
-    whatsappNumber: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiSiteConfigSiteConfig extends Struct.SingleTypeSchema {
+  collectionName: 'site_configs';
+  info: {
+    description: 'Global site settings and configuration';
+    displayName: 'Site Configuration';
+    pluralName: 'site-configs';
+    singularName: 'site-config';
+  };
+  options: {
+    draftAndPublish: false;
+    populateCreatorFields: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: true;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    contact: Schema.Attribute.Component<'shared.contact', false> &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    featuredArtisans: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::artisan.artisan'
+    >;
+    featuredProducts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product.product'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::site-config.site-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false> &
+      Schema.Attribute.Required;
+    siteDescription: Schema.Attribute.Text & Schema.Attribute.Required;
+    siteName: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Ekagrata'>;
+    socialMedia: Schema.Attribute.Component<'shared.social-media', false> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1035,6 +1090,7 @@ declare module '@strapi/strapi' {
       'api::artisan.artisan': ApiArtisanArtisan;
       'api::category.category': ApiCategoryCategory;
       'api::product.product': ApiProductProduct;
+      'api::site-config.site-config': ApiSiteConfigSiteConfig;
       'api::tag.tag': ApiTagTag;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
