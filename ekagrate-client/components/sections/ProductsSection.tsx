@@ -7,24 +7,6 @@ import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
 import type { Product, Category, Artisan } from "@/types";
 
-const sortOptions = [
-  { id: "newest", name: "Newest" },
-  { id: "price-low", name: "Price: Low to High" },
-  { id: "price-high", name: "Price: High to Low" },
-  { id: "popular", name: "Most Popular" },
-] as const;
-
-const priceRanges = [
-  { id: "all", name: "All Prices" },
-  { id: "0-1000", name: "Under ₹1,000" },
-  { id: "1000-5000", name: "₹1,000 - ₹5,000" },
-  { id: "5000-10000", name: "₹5,000 - ₹10,000" },
-  { id: "10000", name: "Above ₹10,000" },
-] as const;
-
-type SortOption = (typeof sortOptions)[number]["id"];
-type PriceRange = (typeof priceRanges)[number]["id"];
-
 interface ProductCardProps {
   product: Product;
 }
@@ -68,12 +50,8 @@ interface FilterSidebarProps {
   artisans: Artisan[];
   selectedCategories: string[];
   selectedArtisans: string[];
-  priceRange: PriceRange;
-  inStock: boolean;
   onCategoriesChange: (categories: string[]) => void;
   onArtisansChange: (artisans: string[]) => void;
-  onPriceRangeChange: (range: PriceRange) => void;
-  onInStockChange: (inStock: boolean) => void;
 }
 
 function FilterSidebar({
@@ -81,12 +59,8 @@ function FilterSidebar({
   artisans,
   selectedCategories,
   selectedArtisans,
-  priceRange,
-  inStock,
   onCategoriesChange,
   onArtisansChange,
-  onPriceRangeChange,
-  onInStockChange,
 }: FilterSidebarProps) {
   return (
     <div className="w-64 flex-shrink-0 border-r border-gray-200 pr-8">
@@ -114,21 +88,6 @@ function FilterSidebar({
       </div>
 
       <div className="mb-8">
-        <h3 className="text-lg font-light mb-4">Price Range</h3>
-        <select
-          className="w-full p-2 border border-gray-300 rounded-lg text-gray-700 font-light"
-          value={priceRange}
-          onChange={(e) => onPriceRangeChange(e.target.value as PriceRange)}
-        >
-          {priceRanges.map((range) => (
-            <option key={range.id} value={range.id}>
-              {range.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-8">
         <h3 className="text-lg font-light mb-4">Artisans</h3>
         <div className="space-y-2">
           {artisans?.map((artisan) => (
@@ -150,19 +109,6 @@ function FilterSidebar({
           ))}
         </div>
       </div>
-
-      <div>
-        <h3 className="text-lg font-light mb-4">Availability</h3>
-        <label className="flex items-center">
-          <input
-            checked={inStock}
-            className="form-checkbox text-rose-600 rounded border-gray-300"
-            type="checkbox"
-            onChange={(e) => onInStockChange(e.target.checked)}
-          />
-          <span className="ml-2 text-gray-700 font-light">In Stock Only</span>
-        </label>
-      </div>
     </div>
   );
 }
@@ -170,9 +116,6 @@ function FilterSidebar({
 interface ProductFilters {
   category?: string;
   artisan?: string;
-  priceRange?: { min?: number; max?: number };
-  inStock?: boolean;
-  sortBy?: string;
   page?: number;
   pageSize?: number;
 }
@@ -196,9 +139,6 @@ export function ProductsSection({
 }: ProductsSectionProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedArtisans, setSelectedArtisans] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<PriceRange>("all");
-  const [inStock, setInStock] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
 
   const handleCategoriesChange = (newCategories: string[]) => {
     setSelectedCategories(newCategories);
@@ -210,90 +150,34 @@ export function ProductsSection({
     onFilterChange({ artisan: newArtisans[0] });
   };
 
-  const handlePriceRangeChange = (range: PriceRange) => {
-    setPriceRange(range);
-    let priceFilter;
-    switch (range) {
-      case "0-1000":
-        priceFilter = { max: 1000 };
-        break;
-      case "1000-5000":
-        priceFilter = { min: 1000, max: 5000 };
-        break;
-      case "5000-10000":
-        priceFilter = { min: 5000, max: 10000 };
-        break;
-      case "10000":
-        priceFilter = { min: 10000 };
-        break;
-      default:
-        priceFilter = undefined;
-    }
-    onFilterChange({ priceRange: priceFilter });
-  };
-
-  const handleInStockChange = (value: boolean) => {
-    setInStock(value);
-    onFilterChange({ inStock: value });
-  };
-
-  const handleSortChange = (value: SortOption) => {
-    setSortBy(value);
-    onFilterChange({ sortBy: value });
-  };
-
   return (
     <div className="container max-w-7xl mx-auto px-6 py-12">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-light tracking-wide">Our Products</h1>
-        <div className="w-48">
-          <select
-            className="w-full p-2 border border-gray-300 rounded-lg text-gray-700 font-light"
-            value={sortBy}
-            onChange={(e) => handleSortChange(e.target.value as SortOption)}
-          >
-            {sortOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
-      <div className="flex gap-12">
+      <div className="flex gap-8">
         <FilterSidebar
-          artisans={artisans || []}
-          categories={categories || []}
-          inStock={inStock}
-          priceRange={priceRange}
-          selectedArtisans={selectedArtisans}
+          categories={categories}
+          artisans={artisans}
           selectedCategories={selectedCategories}
-          onArtisansChange={handleArtisansChange}
+          selectedArtisans={selectedArtisans}
           onCategoriesChange={handleCategoriesChange}
-          onInStockChange={handleInStockChange}
-          onPriceRangeChange={handlePriceRangeChange}
+          onArtisansChange={handleArtisansChange}
         />
 
         <div className="flex-1">
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : !products || products.length === 0 ? (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-light mb-2">No products found</h3>
-              <p className="text-gray-600 font-light">Try adjusting your filters to find what you&apos;re looking for.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product) => (
+          <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))
+            ) : (
+              products?.map((product) => (
                 <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

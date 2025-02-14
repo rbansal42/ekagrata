@@ -203,7 +203,7 @@ export async function getFeaturedProducts(): Promise<StrapiResponse<Product[]>> 
       featured: true
     },
     pagination: {
-      pageSize: 6
+      pageSize: 5
     }
   });
 }

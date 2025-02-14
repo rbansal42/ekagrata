@@ -31,18 +31,41 @@ export interface Category {
     description: string;
     slug: string;
     image: StrapiImage;
+    products: {
+      data: Product[];
+    };
+    artisans: {
+      data: Artisan[];
+    };
+    featured: boolean;
+    order: number;
   };
+}
+
+export interface Contact {
+  whatsapp: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  defaultMessage?: string;
 }
 
 export interface Artisan {
   id: number;
   attributes: {
     name: string;
-    specialization: string;
-    bio: string;
-    location: string;
-    image: StrapiImage;
     slug: string;
+    bio: string;
+    avatar: StrapiImage;
+    gallery?: StrapiImages;
+    products: {
+      data: Product[];
+    };
+    categories: {
+      data: Category[];
+    };
+    contact: Contact;
+    featured: boolean;
   };
 }
 
@@ -50,50 +73,25 @@ export interface Product {
   id: number;
   attributes: {
     name: string;
-    description: string;
-    shortDescription: string;
-    price: number;
-    whatsappNumber: string;
-    whatsappMessage?: string;
-    stock: number;
     slug: string;
+    shortDescription: string;
+    longDescription: string;
+    price: number;
     images: StrapiImages;
-    featuredImage?: StrapiImage;
-    category: {
-      data: Category;
-    };
+    featuredImage: number;
     artisan: {
       data: Artisan;
     };
-    estimatedDelivery?: string;
-    isCustomizable?: boolean;
-    customizationOptions?: Array<{
-      name: string;
-      description?: string;
-      type: "color" | "size" | "material" | "design" | "text";
-      options?: any;
-      priceAdjustment?: number;
-    }>;
-    tags?: {
-      data: Array<{
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      }>;
+    categories: {
+      data: Category[];
     };
-    createdAt: string;
-    updatedAt: string;
+    featured: boolean;
   };
 }
 
 export interface ProductFilters {
   categories?: string[];
   artisans?: string[];
-  priceRange?: string;
-  inStock?: boolean;
-  sortBy?: string;
   page?: number;
   pageSize?: number;
 }

@@ -20,7 +20,9 @@ export function formatPrice(price: number): string {
 }
 
 export function getImageUrl(url: string | null | undefined): string {
-  if (!url) return '/images/placeholder.jpg';
+  if (!url) {
+    throw new Error('Image URL is required');
+  }
   if (url.startsWith('http')) return url;
   return `${process.env.NEXT_PUBLIC_STRAPI_URL}${url}`;
 }

@@ -36,7 +36,7 @@ export const siteConfig = {
     }
   ],
   links: {
-    instagram: "https://instagram.com/ekagrata",
-    facebook: "https://facebook.com/ekagrata",
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL,
   },
 };

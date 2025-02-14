@@ -13,6 +13,7 @@ import clsx from "clsx";
 import { Providers } from "./providers";
 
 import Navbar from "@/components/navbar";
+import Footer from '../components/Footer';
 
 const workSans = Work_Sans({
   subsets: ["latin"],
@@ -101,17 +102,7 @@ export default function RootLayout({
           <div className="relative flex flex-col h-screen">
             <Navbar />
             <main className="flex-grow pt-16">{children}</main>
-            <footer className="w-full flex flex-col items-center justify-center py-8 gap-2 border-t border-rose-100/20 backdrop-blur-sm">
-              <p className="text-gray-600 font-light tracking-wide text-sm">
-                An Initiative by{" "}
-                <span className="text-rose-900">
-                  Rotaract Club of Ingenious Minds
-                </span>
-              </p>
-              <p className="text-gray-600 font-light tracking-wide text-sm">
-                © 2024 Ekagrata. All rights reserved.
-              </p>
-            </footer>
+            <Footer />
           </div>
         </Providers>
       </body>
