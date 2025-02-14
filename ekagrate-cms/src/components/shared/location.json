@@ -2,10 +2,16 @@
   "collectionName": "components_shared_locations",
   "info": {
     "displayName": "Location",
-    "description": "Geographic location information"
+    "description": "Address and location information"
   },
-  "options": {},
+  "options": {
+    "timestamps": true
+  },
   "attributes": {
+    "address": {
+      "type": "text",
+      "required": true
+    },
     "city": {
       "type": "string",
       "required": true
@@ -14,13 +20,10 @@
       "type": "string",
       "required": true
     },
-    "country": {
+    "pincode": {
       "type": "string",
-      "required": true
-    },
-    "coordinates": {
-      "type": "json",
-      "required": false
+      "required": true,
+      "regex": "^[0-9]{6}$"
     }
   }
 } 

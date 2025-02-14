@@ -4,15 +4,22 @@
     "displayName": "Contact",
     "description": "Contact information"
   },
-  "options": {},
+  "options": {
+    "timestamps": true
+  },
   "attributes": {
+    "phone": {
+      "type": "string",
+      "required": true,
+      "regex": "^[0-9]{10}$"
+    },
     "whatsapp": {
       "type": "string",
-      "required": true
+      "required": true,
+      "regex": "^[0-9]{10}$"
     },
     "email": {
-      "type": "email",
-      "required": false
+      "type": "email"
     },
     "instagram": {
       "type": "string",

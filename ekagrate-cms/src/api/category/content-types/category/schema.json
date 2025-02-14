@@ -5,7 +5,7 @@
     "singularName": "category",
     "pluralName": "categories",
     "displayName": "Category",
-    "description": "Product categories and collections"
+    "description": "Product categories and craft specializations"
   },
   "options": {
     "draftAndPublish": true
@@ -32,9 +32,15 @@
     },
     "products": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::product.product",
-      "mappedBy": "category"
+      "mappedBy": "categories"
+    },
+    "artisans": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::artisan.artisan",
+      "mappedBy": "categories"
     },
     "featured": {
       "type": "boolean",

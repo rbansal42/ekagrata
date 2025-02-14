@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_product_specifications",
+  "info": {
+    "displayName": "Specifications",
+    "description": "Product specifications and details"
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "materials": {
+      "type": "text",
+      "required": true
+    },
+    "dimensions": {
+      "type": "component",
+      "component": "product.dimensions",
+      "required": true
+    },
+    "weight": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "careInstructions": {
+      "type": "richtext"
+    },
+    "customizable": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+} 

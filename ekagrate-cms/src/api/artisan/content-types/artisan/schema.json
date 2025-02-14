@@ -24,15 +24,6 @@
       "type": "richtext",
       "required": true
     },
-    "expertise": {
-      "type": "string",
-      "required": true
-    },
-    "location": {
-      "type": "component",
-      "component": "shared.location",
-      "required": true
-    },
     "avatar": {
       "type": "media",
       "multiple": false,
@@ -49,6 +40,12 @@
       "relation": "oneToMany",
       "target": "api::product.product",
       "mappedBy": "artisan"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "artisans"
     },
     "contact": {
       "type": "component",
