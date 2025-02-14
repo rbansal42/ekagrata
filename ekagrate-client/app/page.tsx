@@ -1,90 +1,174 @@
-import { getSiteConfig, getFeaturedProducts, getFeaturedArtisans } from '../lib/strapi';
-import { HeroSection } from '../components/sections/HeroSection';
-import { FeaturedProductsSection } from '../components/sections/FeaturedProductsSection';
-import { FeaturedArtisansSection } from '../components/sections/FeaturedArtisansSection';
-import { CategorySection } from '../components/sections/CategorySection';
-
-export async function generateMetadata() {
-  const config = await getSiteConfig();
-  const { siteName, siteDescription, seo } = config.data.attributes;
-
-  return {
-    title: seo.metaTitle || siteName,
-    description: seo.metaDescription || siteDescription,
-    openGraph: {
-      title: seo.metaTitle || siteName,
-      description: seo.metaDescription || siteDescription,
-      images: [
-        {
-          url: seo.metaImage.data.attributes.url,
-          alt: seo.metaImage.data.attributes.alternativeText,
-        },
-      ],
-    },
-  };
-}
+import { getHomePageData } from '@/lib/api/client';
+import { ProductCard } from '@/components/ui/ProductCard';
+import { ArtisanCard } from '@/components/ui/ArtisanCard';
+import { CategoryCard } from '@/components/ui/CategoryCard';
+import { Button } from '@heroui/button';
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function HomePage() {
-  const [featuredProducts, featuredArtisans] = await Promise.all([
-    getFeaturedProducts(),
-    getFeaturedArtisans()
-  ]);
+  const { featuredArtisans, featuredProducts, categories } = await getHomePageData();
 
   return (
-    <main>
-      <HeroSection />
-      
-      {/* Featured Products Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">
-            Featured Products
-          </h2>
-          <FeaturedProductsSection 
-            products={featuredProducts.data} 
-            loading={!featuredProducts.data} 
-          />
+    <main className="flex-1">
+      {/* Hero Section */}
+      <section className="relative flex flex-col items-center justify-center text-center min-h-[90vh] px-6 py-32">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-100/30 via-transparent to-transparent opacity-70" />
+
+        {/* Content */}
+        <div className="relative flex flex-col items-center gap-12 max-w-5xl mx-auto">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light">
+            Empowering{" "}
+            <span className="font-normal bg-gradient-to-r from-rose-900 via-rose-800 to-rose-900 bg-clip-text text-transparent">
+              artisans
+            </span>, preserving heritage
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl font-light leading-relaxed tracking-wide">
+            Connect directly with skilled local artisans and discover their unique
+            handcrafted creations. Every purchase creates sustainable
+            opportunities and supports their livelihoods.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 mt-4">
+            <Button
+              as="a"
+              href="/products"
+              className="bg-rose-900 hover:bg-rose-800 text-white font-light px-10 py-7 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              size="lg"
+            >
+              Shop Artisan Products
+            </Button>
+            <Button
+              as="a"
+              className="font-light border-2 border-rose-900 text-rose-900 hover:bg-rose-50/50 px-10 py-7 text-lg rounded-xl transition-all duration-300"
+              href="#artisans"
+              size="lg"
+              variant="bordered"
+            >
+              Meet our Artisans
+            </Button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap justify-center gap-12 mt-8 text-sm text-gray-600">
+            <div className="flex items-center gap-3">
+              <span className="text-rose-900">✦</span>
+              <span className="font-light tracking-wide">
+                100% Authentic Handcrafted
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-rose-900">✦</span>
+              <span className="font-light tracking-wide">
+                Direct Artisan Support
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-rose-900">✦</span>
+              <span className="font-light tracking-wide">
+                Sustainable Practices
+              </span>
+            </div>
+          </div>
+
+          {/* Initiative Text */}
+          <div className="text-sm text-gray-600 font-light tracking-wide mt-8">
+            An Initiative by{" "}
+            <span className="text-rose-900">
+              Rotaract Club of Ingenious Minds
+            </span>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <span className="text-rose-900 opacity-50">↓</span>
         </div>
       </section>
 
-      {/* Featured Categories Section */}
-      <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">
-            Featured Categories
-          </h2>
-          <CategorySection featured limit={4} />
-        </div>
-      </section>
+      {/* Categories Section */}
+      {categories.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Browse Categories</h2>
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Featured Products Section */}
+      {featuredProducts.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Featured Products</h2>
+            <a href="/products" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+              View all products
+            </a>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Featured Artisans Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">
-            Featured Artisans
-          </h2>
-          <FeaturedArtisansSection 
-            artisans={featuredArtisans.data} 
-            loading={!featuredArtisans.data} 
-          />
-        </div>
-      </section>
+      {featuredArtisans.length > 0 && (
+        <section className="bg-gray-50 py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900">Meet Our Artisans</h2>
+              <a href="/artisans" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                View all artisans
+              </a>
+            </div>
+            <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredArtisans.map((artisan) => (
+                <ArtisanCard key={artisan.id} artisan={artisan} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-      {/* About Ingenions Minds Section */}
-      <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">
-            About Ingenions Minds
-          </h2>
-          <div className="prose prose-lg max-w-none">
-            <p>
-              Ingenions Minds is dedicated to empowering local artisans and preserving traditional craftsmanship. 
-              Through Ekagrata, we connect skilled artisans with appreciative customers, ensuring the continuation 
-              of India's rich artistic heritage.
+      {/* Value Proposition Section */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 text-gray-900">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+              </svg>
+            </div>
+            <h3 className="mt-6 text-lg font-medium text-gray-900">Authentic Craftsmanship</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Every piece tells a story of tradition, skill, and dedication passed down through generations
             </p>
-            <p className="mt-4">
-              Our mission is to create a sustainable marketplace that benefits both artisans and consumers, 
-              while keeping alive the traditional art forms that make our culture unique.
+          </div>
+
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 text-gray-900">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </div>
+            <h3 className="mt-6 text-lg font-medium text-gray-900">Direct from Artisans</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Support skilled craftspeople directly and learn about their unique creative processes
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 text-gray-900">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+            </div>
+            <h3 className="mt-6 text-lg font-medium text-gray-900">Preserving Heritage</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Each purchase helps preserve India's rich cultural heritage and traditional craft forms
             </p>
           </div>
         </div>

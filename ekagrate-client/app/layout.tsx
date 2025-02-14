@@ -1,70 +1,12 @@
-import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
-import {
-  Work_Sans,
-  Playfair_Display,
-  Cormorant_Garamond,
-  Cinzel,
-  Marcellus,
-  Tenor_Sans,
-} from "next/font/google";
-import clsx from "clsx";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-import { Providers } from "./providers";
-
-import Navbar from "@/components/navbar";
-import Footer from '../components/Footer';
-
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-work-sans",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-playfair",
-});
-
-const cormorant = Cormorant_Garamond({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-cormorant",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-cinzel",
-});
-
-const marcellus = Marcellus({
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-marcellus",
-});
-
-const tenor = Tenor_Sans({
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-tenor",
-});
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Ekagrata - Artisan Products Storefront",
-  description:
-    "Discover unique artisan products at Ekagrata - A Rotaract project promoting local artisans and their craftsmanship.",
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "white" }],
+  title: 'Ekagrata - Authentic Indian Craftsmanship',
+  description: 'Discover and shop authentic handcrafted products directly from skilled Indian artisans.',
 };
 
 export default function RootLayout({
@@ -73,38 +15,58 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      suppressHydrationWarning
-      className={clsx(
-        workSans.variable,
-        playfair.variable,
-        cormorant.variable,
-        cinzel.variable,
-        marcellus.variable,
-        tenor.variable,
-      )}
-      lang="en"
-    >
-      <head />
-      <body
-        className={clsx(
-          "min-h-screen font-sans antialiased",
-          "bg-gradient-to-br from-white via-rose-50/30 to-rose-100/20",
-        )}
-      >
-        <Providers
-          themeProps={{
-            attribute: "class",
-            defaultTheme: "light",
-            forcedTheme: "light",
-          }}
-        >
-          <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className="flex-grow pt-16">{children}</main>
-            <Footer />
-          </div>
-        </Providers>
+    <html lang="en" className="h-full">
+      <body className={`${inter.className} h-full bg-background text-foreground`}>
+        <div className="flex min-h-full flex-col">
+          <header className="bg-white border-b">
+            <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+              <div className="flex lg:flex-1">
+                <a href="/" className="-m-1.5 p-1.5">
+                  <span className="text-xl font-bold text-gray-900">Ekagrata</span>
+                </a>
+              </div>
+              <div className="flex gap-x-12">
+                <a href="/products" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                  Products
+                </a>
+                <a href="/artisans" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                  Artisans
+                </a>
+                <a href="/categories" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                  Categories
+                </a>
+                <a href="/about" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                  About
+                </a>
+              </div>
+              <div className="flex flex-1 justify-end">
+                <a href="/contact" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                  Contact Us
+                </a>
+              </div>
+            </nav>
+          </header>
+
+          {children}
+
+          <footer className="bg-white border-t">
+            <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
+              <div className="mt-8 md:order-1 md:mt-0">
+                <p className="text-center text-xs leading-5 text-gray-500">
+                  &copy; {new Date().getFullYear()} Ekagrata. All rights reserved.
+                </p>
+              </div>
+              <div className="flex justify-center space-x-6 md:order-2">
+                <a href="/privacy" className="text-gray-500 hover:text-gray-600">
+                  Privacy Policy
+                </a>
+                <a href="/terms" className="text-gray-500 hover:text-gray-600">
+                  Terms of Service
+                </a>
+              </div>
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );
