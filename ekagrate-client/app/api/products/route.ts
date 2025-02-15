@@ -8,6 +8,8 @@ export async function GET(request: Request) {
     const pageSize = parseInt(searchParams.get('pageSize') || '12');
     const category = searchParams.get('category');
     const search = searchParams.get('search');
+    const minPriceParam = searchParams.get('minPrice');
+    const maxPriceParam = searchParams.get('maxPrice');
 
     const client = await clientPromise;
     const db = client.db();
@@ -20,6 +22,11 @@ export async function GET(request: Request) {
     if (search) {
       // Search by product name, case-insensitive
       query.name = { $regex: search, $options: 'i' };
+    }
+    if (minPriceParam || maxPriceParam) {
+      query.price = {};
+      if (minPriceParam) query.price.$gte = parseFloat(minPriceParam);
+      if (maxPriceParam) query.price.$lte = parseFloat(maxPriceParam);
     }
 
     const total = await db.collection('products').countDocuments(query);
