@@ -10,7 +10,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
   const image = category.image;
 
   return (
-    <Link href={`/categories/${category.slug}`} className="group block">
+    <Link href={`/products?category=${category.slug}`} className="group block">
       <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
         {image ? (
           <Image
