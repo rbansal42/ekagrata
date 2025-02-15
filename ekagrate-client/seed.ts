@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId } from "mongodb";
+const { MongoClient, ObjectId } = require("mongodb");
 
 // Define interfaces for dummy data
 interface Image {
@@ -7,7 +7,7 @@ interface Image {
 }
 
 interface Product {
-  _id: ObjectId;
+  _id: typeof ObjectId;
   name: string;
   slug: string;
   shortDescription: string;
@@ -15,17 +15,17 @@ interface Product {
   price: number;
   images: Image[];
   featuredImage: string;
-  categories: ObjectId[]; // Reference to category _id's
+  categories: typeof ObjectId[]; // Reference to category _id's
   featured: boolean;
 }
 
 interface Category {
-  _id: ObjectId;
+  _id: typeof ObjectId;
   name: string;
   description?: string;
   slug: string;
   image?: Image;
-  products: ObjectId[]; // Array of product _id's
+  products: typeof ObjectId[]; // Array of product _id's
   featured: boolean;
   order: number;
 }
