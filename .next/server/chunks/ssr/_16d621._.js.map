@@ -1,0 +1,11 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Volumes/Code/ekagrata/components/sections/HeroSection.tsx/proxy.js"],"sourcesContent":["import { registerClientReference } from \"react-server-dom-turbopack/server.edge\";\nexport const HeroSection = registerClientReference(\n    function() { throw new Error(\"Attempted to call HeroSection() from the server but HeroSection is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.\"); },\n    \"[project]/components/sections/HeroSection.tsx <module evaluation>\",\n    \"HeroSection\",\n);\n"],"names":[],"mappings":";;;AAAA;;AACO,MAAM,cAAc,CAAA,GAAA,oXAAA,CAAA,0BAAuB,AAAD,EAC7C;IAAa,MAAM,IAAI,MAAM;AAAsO,GACnQ,qEACA"}},
+    {"offset": {"line": 15, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 21, "column": 0}, "map": {"version":3,"sources":["file:///Volumes/Code/ekagrata/components/sections/HeroSection.tsx/proxy.js"],"sourcesContent":["import { registerClientReference } from \"react-server-dom-turbopack/server.edge\";\nexport const HeroSection = registerClientReference(\n    function() { throw new Error(\"Attempted to call HeroSection() from the server but HeroSection is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.\"); },\n    \"[project]/components/sections/HeroSection.tsx\",\n    \"HeroSection\",\n);\n"],"names":[],"mappings":";;;AAAA;;AACO,MAAM,cAAc,CAAA,GAAA,oXAAA,CAAA,0BAAuB,AAAD,EAC7C;IAAa,MAAM,IAAI,MAAM;AAAsO,GACnQ,iDACA"}},
+    {"offset": {"line": 29, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 117, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 117, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

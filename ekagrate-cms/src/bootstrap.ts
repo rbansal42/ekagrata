@@ -1,19 +1,38 @@
-import seeder from './seeders';
-
 export default async ({ strapi }) => {
   // Add request logging middleware
   strapi.server.use(async (ctx, next) => {
     const start = Date.now();
-    console.log(`[Strapi] Incoming ${ctx.method} request to ${ctx.url}`);
-    console.log(`[Strapi] Request headers:`, ctx.headers);
+    
+    // Detailed request logging
+    console.log('\n=== REQUEST ===');
+    console.log(`[${new Date().toISOString()}] ${ctx.method} ${ctx.url}`);
+    console.log('Headers:', JSON.stringify(ctx.headers, null, 2));
+    console.log('Query:', JSON.stringify(ctx.query, null, 2));
+    console.log('Body:', JSON.stringify(ctx.request.body, null, 2));
+    console.log('Params:', JSON.stringify(ctx.params, null, 2));
     
     try {
       await next();
       
       const ms = Date.now() - start;
-      console.log(`[Strapi] Response sent for ${ctx.url} - Status: ${ctx.status} - ${ms}ms`);
+      
+      // Detailed response logging
+      console.log('\n=== RESPONSE ===');
+      console.log(`Status: ${ctx.status}`);
+      console.log(`Time: ${ms}ms`);
+      console.log('Body:', JSON.stringify(ctx.body, null, 2));
+      
+      if (ctx.status === 404) {
+        console.log('\n=== DEBUG INFO ===');
+        console.log('Available Routes:', strapi.routes);
+        console.log('Requested Path:', ctx.path);
+        console.log('Route Params:', ctx.params);
+      }
+      
     } catch (error) {
-      console.error(`[Strapi] Error processing ${ctx.url}:`, error);
+      console.error('\n=== ERROR ===');
+      console.error(`Error processing ${ctx.url}:`, error);
+      console.error('Stack:', error.stack);
       throw error;
     }
   });
@@ -52,10 +71,6 @@ export default async ({ strapi }) => {
 
     await Promise.all(permissionPromises);
     console.log('Permissions setup completed');
-
-    // Run the seeder
-    console.log('Starting data seeding...');
-    await seeder({ strapi });
     
   } catch (error) {
     console.error('Bootstrap process failed:', error);

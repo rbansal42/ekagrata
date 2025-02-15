@@ -16,7 +16,21 @@ export default [
   },
   'strapi::cors',
   'strapi::poweredBy',
-  'strapi::logger',
+  {
+    name: 'strapi::logger',
+    config: {
+      level: 'debug',
+      logRequestBody: true,
+      logRequestQuery: true,
+      logResponseBody: true,
+      logResponseData: true,
+      exclude: ['/admin/plugins/upload'],
+      hooks: {
+        request: true,
+        response: true,
+      },
+    },
+  },
   'strapi::query',
   'strapi::body',
   'strapi::session',

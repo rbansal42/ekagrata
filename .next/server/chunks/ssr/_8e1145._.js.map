@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Volumes/Code/ekagrata/app/page.tsx"],"sourcesContent":["import {\n  HeroSection,\n  ProductsSection,\n  ArtisansSection,\n  StoriesSection,\n} from \"@/components/sections\";\n\nexport default function Home() {\n  return (\n    <div className=\"flex flex-col gap-20 py-8 md:py-10\">\n      <HeroSection />\n      <ProductsSection />\n      <ArtisansSection />\n      <StoriesSection />\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAOe,SAAS;IACtB,qBACE,6WAAC;QAAI,WAAU;;0BACb,6WAAC,sIAAA,CAAA,cAAW;;;;;0BACZ,6WAAC,0IAAA,CAAA,kBAAe;;;;;0BAChB,6WAAC,0IAAA,CAAA,kBAAe;;;;;0BAChB,6WAAC,yIAAA,CAAA,iBAAc;;;;;;;;;;;AAGrB"}},
+    {"offset": {"line": 49, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 60, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 60, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
