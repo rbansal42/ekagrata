@@ -98,17 +98,36 @@ export default async function HomePage() {
 
       {/* Featured Products Section */}
       {featuredProducts.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Featured Products</h2>
-            <a href="/products" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-              View all products
-            </a>
-          </div>
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {featuredProducts.map((product: Product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
+        <section className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          {/* Background Elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-50/50 to-transparent rounded-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(0,0,0,0.05)_1px,transparent_0)] [background-size:40px_40px]" />
+          
+          <div className="relative">
+            <div className="flex flex-col items-center text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 font-work-sans mb-4">Featured Artisan Products</h2>
+              <p className="text-gray-600 max-w-2xl font-work-sans">
+                Discover our handpicked selection of exceptional artisan creations, each piece telling a unique story of craftsmanship and heritage.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {featuredProducts.slice(0, 4).map((product: Product) => (
+                <ProductCard key={product._id} product={product} featured />
+              ))}
+            </div>
+
+            <div className="mt-16 text-center">
+              <a 
+                href="/products" 
+                className="inline-flex items-center px-8 py-3 rounded-xl bg-rose-900 text-white font-work-sans hover:bg-rose-800 transition-colors shadow-lg hover:shadow-xl"
+              >
+                View All Products
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            </div>
           </div>
         </section>
       )}
