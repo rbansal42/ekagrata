@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Category } from '@/types';
+import { Category } from '@/types/index';
 
 interface CategoryCardProps {
   category: Category;
