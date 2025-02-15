@@ -26,17 +26,11 @@ export default function RootLayout({
                 </a>
               </div>
               <div className="flex gap-x-12">
+                <a href="/" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+                  Home
+                </a>
                 <a href="/products" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
                   Products
-                </a>
-                <a href="/artisans" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
-                  Artisans
-                </a>
-                <a href="/categories" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
-                  Categories
-                </a>
-                <a href="/about" className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
-                  About
                 </a>
               </div>
               <div className="flex flex-1 justify-end">
