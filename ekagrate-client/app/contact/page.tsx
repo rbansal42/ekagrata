@@ -19,7 +19,7 @@ export default function ContactPage() {
           priority
           alt="Artisan Crafts"
           className="object-cover"
-          src="https://images.unsplash.com/photo-1604014237800-1c9102c219da?q=80&w=2400&h=800&fit=crop"
+          src="/img.avif"
         />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6">

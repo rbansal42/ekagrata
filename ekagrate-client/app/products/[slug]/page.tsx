@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Product } from "@/types";
+import { Product } from "@/types/index";
 import { ProductDetail } from "@/components/sections/ProductDetail";
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
