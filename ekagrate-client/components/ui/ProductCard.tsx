@@ -1,31 +1,35 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Product, StrapiData } from '@/lib/api/types';
+import { Product } from '@/types';
 
 interface ProductCardProps {
-  product: StrapiData<Product>;
+  product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { attributes } = product;
-  const featuredImage = attributes.images.data[attributes.featuredImage];
-
   return (
-    <Link href={`/products/${attributes.slug}`} className="group">
-      <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-        <Image
-          src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${featuredImage.attributes.url}`}
-          alt={attributes.name}
-          width={featuredImage.attributes.width}
-          height={featuredImage.attributes.height}
-          className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-        />
+    <Link href={`/products/${product.slug}`} className="group relative block">
+      <div className="aspect-[4/3] overflow-hidden rounded-lg">
+        {product.featuredImage ? (
+          <Image
+            src={product.featuredImage}
+            alt={product.name}
+            width={400}
+            height={300}
+            className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-gray-200 text-gray-500">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+          </div>
+        )}
       </div>
-      <div className="mt-4">
-        <h3 className="text-sm font-medium text-gray-900">{attributes.name}</h3>
-        <p className="mt-1 text-sm text-gray-500">{attributes.shortDescription}</p>
-        <p className="mt-1 text-sm font-medium text-gray-900">₹{attributes.price}</p>
-      </div>
+      <h3 className="mt-2 text-lg font-work-sans">{product.name}</h3>
+      <p className="text-gray-700">${product.price}</p>
     </Link>
   );
 } 

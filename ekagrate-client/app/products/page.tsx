@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { getProducts, getCategories, getArtisans, Product, Category, Artisan } from "@/lib/strapi";
+import { useSearchParams } from "next/navigation";
+import { getProducts, getCategories } from "@/lib/api/fetcher";
+import { Product, Category } from "@/types";
 import { ProductsSection } from "@/components/sections/ProductsSection";
 
 interface ProductFilters {
   category?: string;
-  artisan?: string;
   priceRange?: { min?: number; max?: number };
   inStock?: boolean;
   sortBy?: string;
@@ -18,33 +18,28 @@ interface ProductFilters {
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [artisans, setArtisans] = useState<Artisan[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ProductFilters>({
     page: 1,
     pageSize: 12,
   });
 
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [productsRes, categoriesRes, artisansRes] = await Promise.all([
+        const [productsRes, categoriesRes] = await Promise.all([
           getProducts(filters),
-          getCategories(),
-          getArtisans(),
+          getCategories()
         ]);
 
         setProducts(productsRes?.data || []);
         setCategories(categoriesRes?.data || []);
-        setArtisans(artisansRes?.data || []);
       } catch (error) {
         setProducts([]);
         setCategories([]);
-        setArtisans([]);
       } finally {
         setLoading(false);
       }
@@ -62,7 +57,6 @@ export default function ProductsPage() {
       <ProductsSection
         products={products}
         categories={categories}
-        artisans={artisans}
         loading={loading}
         filters={filters}
         onFilterChange={handleFilterChange}

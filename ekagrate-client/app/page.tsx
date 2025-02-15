@@ -1,12 +1,22 @@
-import { getHomePageData } from '@/lib/api/client';
 import { ProductCard } from '@/components/ui/ProductCard';
-import { ArtisanCard } from '@/components/ui/ArtisanCard';
 import { CategoryCard } from '@/components/ui/CategoryCard';
 import { Button } from '@heroui/button';
+import { Category, Product } from '@/types/';
+
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function HomePage() {
-  const { featuredArtisans, featuredProducts, categories } = await getHomePageData();
+  // Fetch categories and featured products from our API endpoints
+  const [categoriesRes, productsRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/categories`, { next: { revalidate: 3600 } }),
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/products?featured=true`, { next: { revalidate: 3600 } })
+  ]);
+
+  const categoriesData = await categoriesRes.json();
+  const productsData = await productsRes.json();
+
+  const categories: Category[] = categoriesData.data;
+  const featuredProducts: Product[] = productsData.data;
 
   return (
     <main className="flex-1">
@@ -18,15 +28,13 @@ export default async function HomePage() {
         {/* Content */}
         <div className="relative flex flex-col items-center gap-12 max-w-5xl mx-auto">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-light">
-            Empowering{" "}
+            Empowering{' '}
             <span className="font-normal bg-gradient-to-r from-rose-900 via-rose-800 to-rose-900 bg-clip-text text-transparent">
               artisans
             </span>, preserving heritage
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl font-light leading-relaxed tracking-wide">
-            Connect directly with skilled local artisans and discover their unique
-            handcrafted creations. Every purchase creates sustainable
-            opportunities and supports their livelihoods.
+            Connect directly with skilled local artisans and discover their unique handcrafted creations. Every purchase creates sustainable opportunities and supports their livelihoods.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 mt-4">
             <Button
@@ -36,15 +44,6 @@ export default async function HomePage() {
               size="lg"
             >
               Shop Artisan Products
-            </Button>
-            <Button
-              as="a"
-              className="font-light border-2 border-rose-900 text-rose-900 hover:bg-rose-50/50 px-10 py-7 text-lg rounded-xl transition-all duration-300"
-              href="#artisans"
-              size="lg"
-              variant="bordered"
-            >
-              Meet our Artisans
             </Button>
           </div>
 
@@ -72,7 +71,7 @@ export default async function HomePage() {
 
           {/* Initiative Text */}
           <div className="text-sm text-gray-600 font-light tracking-wide mt-8">
-            An Initiative by{" "}
+            An Initiative by{' '}
             <span className="text-rose-900">
               Rotaract Club of Ingenious Minds
             </span>
@@ -90,7 +89,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">Browse Categories</h2>
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((category) => (
+            {categories.map((category: Category) => (
               <CategoryCard key={category.id} category={category} />
             ))}
           </div>
@@ -107,28 +106,9 @@ export default async function HomePage() {
             </a>
           </div>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
+            {featuredProducts.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* Featured Artisans Section */}
-      {featuredArtisans.length > 0 && (
-        <section className="bg-gray-50 py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900">Meet Our Artisans</h2>
-              <a href="/artisans" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                View all artisans
-              </a>
-            </div>
-            <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredArtisans.map((artisan) => (
-                <ArtisanCard key={artisan.id} artisan={artisan} />
-              ))}
-            </div>
           </div>
         </section>
       )}

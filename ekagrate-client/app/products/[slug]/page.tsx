@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProducts, Product } from "@/lib/strapi";
+import { Product } from "@/types";
 import { ProductDetail } from "@/components/sections/ProductDetail";
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
@@ -13,8 +13,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const response = await getProducts({ filters: { slug: { $eq: slug } } });
-        setProduct(response?.data?.[0] || null);
+        const res = await fetch(`/api/products/${slug}`);
+        if (!res.ok) throw new Error('Failed to fetch product');
+        const data = await res.json();
+        setProduct(data?.data || null);
       } catch (error) {
         setProduct(null);
       } finally {
