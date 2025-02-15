@@ -1,7 +1,7 @@
 import { ProductCard } from '@/components/ui/ProductCard';
 import { CategoryCard } from '@/components/ui/CategoryCard';
 import { Button } from '@heroui/button';
-import { Category, Product } from '@/types/';
+import { Category, Product } from '@/types/index';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -90,7 +90,7 @@ export default async function HomePage() {
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">Browse Categories</h2>
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((category: Category) => (
-              <CategoryCard key={category.id} category={category} />
+              <CategoryCard key={category._id} category={category} />
             ))}
           </div>
         </section>
@@ -107,7 +107,7 @@ export default async function HomePage() {
           </div>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {featuredProducts.map((product: Product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         </section>
