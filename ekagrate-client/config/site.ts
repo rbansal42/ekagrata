@@ -2,7 +2,7 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Ekagrata",
-  description: "Discover unique artisan products at Ekagrata - A Rotaract project promoting local artisans and their craftsmanship.",
+  description: "Discover unique artisan products at Ekagrata - A project promoting local artisans and their craftsmanship.",
   navItems: [
     {
       label: "Home",
@@ -13,10 +13,6 @@ export const siteConfig = {
       href: "/products",
     },
     {
-      label: "Artisans",
-      href: "/artisans",
-    },
-    {
       label: "Contact",
       href: "/contact",
     }
@@ -25,10 +21,6 @@ export const siteConfig = {
     {
       label: "Products",
       href: "/products",
-    },
-    {
-      label: "Artisans",
-      href: "/artisans",
     },
     {
       label: "Contact",
