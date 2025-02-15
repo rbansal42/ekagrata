@@ -61,14 +61,23 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <ProductsSection
-        products={products}
-        categories={categories}
-        loading={loading}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(0,0,0,0.05)_1px,transparent_0)] [background-size:40px_40px] -z-10" />
+      
+      <div className="pt-24 pb-16">
+        <div className="container mx-auto px-4 mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 font-work-sans mb-2">Our Products</h1>
+          <p className="text-gray-600 font-work-sans">Discover our curated collection of artisan products</p>
+        </div>
+
+        <ProductsSection
+          products={products}
+          categories={categories}
+          loading={loading}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
     </div>
   );
 }
